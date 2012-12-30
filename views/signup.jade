@@ -1,0 +1,68 @@
+extends layout
+
+block content
+
+  div.container
+    div.row
+      div.span12
+        div.well
+          div.social_buttons
+            div.inset
+              a.fb.login_button(href="/facebook/?next=%2F")
+                div.logo_wrapper
+                  span.logo
+                    span Login with Facebook
+            div.inset
+              a.tw.login_button(href="/twitter/?next=%2F")
+                div.logo_wrapper
+                  span.logo
+                    span Login with Twitter
+
+    div.row
+      div.span4.offset4
+        if message
+          p #{message}
+
+        form(action='/signup', method='post')
+          div
+            label Username:
+            input(type='text', name='username')
+          div
+            label Email:
+            input(type='email', name='email')        
+          div
+            label Password:
+            input(type='password', name='password')
+          div
+            input(type='submit', value='Submit')
+
+  //-
+    div.row
+      div.span6.offset3
+        div.well
+          h2 Sign Up!
+          p It only takes a moment!
+          form(id="frm-signup")
+            fieldset
+              div
+                label E-mail Address:
+                input(type="email", id="email", name="email", class="span4", placeholder="yourname@youremail.com")
+                //span.help-inline We won't spam you!
+                div#hint 
+              div
+                label Username
+                input(type="text", name="username", class="span4", placeholder="your user name")
+                //span.help-inline Be cool!
+                br
+              div
+                label Password:
+                input(type="password", name="password", class="span4", placeholder="your password")
+                //span.help-inline Be secure!
+                br
+              div
+                input(type="submit", name="submit", value="create my account", class="btn btn-primary success")              
+          div#signup-error.hide alert.alert-error
+          p Already have an account? 
+            a(href="/login", id="btn-login") Login
+      //Add additional script to validate the email address
+      script(type="text/javascript", src="../js/lib/jquery.mailcheck.min.js")

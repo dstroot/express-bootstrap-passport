@@ -1,0 +1,57 @@
+extends layout
+
+block content
+  include signupModal
+  include signupErrorModal
+  div.bs-docs-jumbotron.masthead
+    div.container
+      h1= title
+      p= description
+      p
+        a.btn.btn-primary.btn-large(href='/signup') Try #{title} >>
+        |  
+        a.btn.btn-primary.btn-large(href='/login') Login
+      ul.masthead-links
+        li
+          a(href='http://github.com/twitter/bootstrap') GitHub project
+        li
+          a(href='./getting-started.html#examples') Examples
+        li
+          |#{title} Version #{version}
+  div.container
+    div.marketing
+      //h1 Introducing #{title}
+      //p.marketing-byline Need reasons to love #{title}? Look no further.
+      div.row
+        div.span4
+          //img.marketing-img(src='../img/bs-docs-twitter-github.png')
+          h2 By nerds, for nerds.
+          p Built at Twitter by 
+            a(href='http://twitter.com/mdo') @mdo
+            |  and 
+            a(href='http://twitter.com/fat') @fat
+            | , Bootstrap utilizes 
+            a(href='http://lesscss.org') LESS CSS
+            | , is compiled via 
+            a(href='http://nodejs.org') Node
+            | , and is managed through 
+            a(href='http://github.com') GitHub
+            |  to help nerds do awesome stuff on the web.
+        div.span4
+          //img.marketing-img(src='../img/bs-docs-responsive-illustrations.png')
+          h2 Made for everyone.
+          p Bootstrap was made to not only look and behave great in the latest desktop browsers [including IE8+], but in tablet and smartphone browsers via 
+            a(href='./scaffolding.html#responsive') responsive CSS
+            |  as well.
+        div.span4
+          //img.marketing-img(src='../img/bs-docs-bootstrap-features.png')
+          h2 Packed with features.
+          p A 12-column responsive 
+            a(href='./scaffolding.html#gridSystem') grid
+            | , dozens of components, 
+            a(href='./javascript.html') JavaScript plugins
+            | , typography, form controls, and even a 
+            a(href='./customize.html') web-based Customizer
+            |  to make Bootstrap your own.
+  
+  //- hr.soften

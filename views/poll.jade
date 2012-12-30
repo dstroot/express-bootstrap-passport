@@ -1,0 +1,16 @@
+extends layout
+
+block content
+
+  div.container
+    h1 View your Poll
+    h2 Text {num} or call #{phonenumber} to Vote!
+    h3 Voting is: #{state}
+    div#chart(style="min-width: 400px; height: 500px; margin: 0 auto")
+    div.footer
+      a(href="http://twilio.com/api") <img src="/img/twilio.png">
+      a(href="http://nodejitsu.com") <img src="/img/nodejitsu.png">
+      a(href="http://cloudant.com") <img src="/img/cloudant.png">
+    script(type='text/javascript', src="/socket.io/socket.io.js")
+    script(type='text/javascript', src="/js/lib/highcharts.js")
+    script(type='text/javascript', src='/js/poll.js')

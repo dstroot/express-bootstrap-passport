@@ -1,3 +1,24 @@
+# Don't track third party code
+##############################
+node_modules
+
+# Don't worry about the bundled files
+######################################
+public/js/bundle.js
+
+# Don't track compiled css
+###########################
+public/css/bootstrap.css
+
+# Don's track OS generated files
+################################
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Don't track other stuff 
+#########################
 lib-cov
 *.seed
 *.log

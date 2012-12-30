@@ -1,0 +1,38 @@
+{
+  "name": "snapvotr",
+  "description": "testing integration of express and bootstrap",
+  "version": "0.0.1-2",
+  "private": true,
+  "analyze": false,
+  "readme": "Nothing here!",
+  "subdomain": "snapvotr",
+  "author": {
+    "name": "Dan Stroot",
+    "email": "dan@thestroots.com"
+  },
+  "keywords": [],
+  "repository": {
+    "url": ""
+  },
+  "engines": {
+    "node": "0.8.x"
+  },
+  "dependencies": {
+    "express": "3.0.x",
+    "jade": "*",
+    "less-middleware": "*",
+    "uglify-js": "2.2.x",
+    "socket.io": "0.9.x",
+    "cradle": "0.6.x",
+    "twiliosig": "0.0.x",
+    "connect-flash": "0.1.x",
+    "passport": ">= 0.0.0",
+    "passport-local": ">= 0.0.0",
+    "crypto":"*"
+  },
+  "scripts": {
+    "start": "node app.js"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {}
+}

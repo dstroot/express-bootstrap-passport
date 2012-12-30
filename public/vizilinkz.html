@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang=en>
+    <head>
+        <title>ViziLinkz</title>
+        <!-- meta tags  -->
+        <meta charset="UTF-8">
+        <meta name="description" content="A Visual Bookmark Repository">
+        <meta name="author" content="Daniel J. Stroot">
+        <meta name="keywords" content="ViziLinkz, bookmarks, visual bookmarks">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+        <!-- Facebook OpenGraph -->
+        <meta property="fb:admins" content="707798959" />
+        <meta property="fb:app_id" content="261898593891827" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="vizilinkz.com" />
+        <meta property="og:url" content="http://www.vizilinkz.com" />
+        <meta property="og:title" content="A Visual Bookmark Repository - ViziLinkz.com" />
+        <meta property="og:image" content="http://vizilinkz.com/img/viz-med.jpg" /> 
+        <!-- fonts -->
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700|Fredoka+One">
+        <!-- styles -->
+        <link rel="stylesheet" type="text/css" href="../css/vizilinkz.css">
+        <link rel="stylesheet" type="text/css" href="../css/vizilinkz-responsive.css">
+        <link rel="stylesheet" type="text/css" href="../css/tweaks.css">
+        <!-- HTML5 shim -->
+        <!--[if lt IE 9]>
+          <script src="../js/lib/html5shiv.js"></script>
+        <![endif]-->
+        <!-- Google CDN -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+        <!-- javascript -->
+        <script type="text/javascript" src="../js/templates.js"></script>  
+        <script type="text/javascript" src="../js/bundle.js"></script>
+        <script type="text/javascript"> {{init}} </script> 
+        <!-- icons -->
+        <link rel="shortcut icon" href="../favicon.ico">
+    </head>
+    <body> 
+        <div id="header"></div>
+        <div class="container">
+          <noscript>
+            Welcome!<br />
+            <br />
+            Your browser has JavaScript disabled.<br />
+            <br />
+            This site uses JavaScript to operate the user interface<br />
+            and retrieve data from our servers. It will not operate<br />
+            without JavaScript.  It does <i>not</i> make background<br />
+            cross-site requests or do anything to jeopardize your<br />
+            security.<br />
+            <br />
+            To view the website, please enable JavaScript and<br />
+            <a href="/">reload the page</a>. Thank you!<br />
+          </noscript>
+          <div id="app"></div>
+          <div id="footer"></div> 
+        </div><!-- container -->
+        <!-- Twitter -->
+        <script>
+        !function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (!d.getElementById(id)) {
+                js = d.createElement(s);
+                js.id = id;
+                js.src = "//platform.twitter.com/widgets.js";
+                fjs.parentNode.insertBefore(js, fjs);
+            }
+        }(document, "script", "twitter-wjs");    
+        </script>
+        <!-- Facebook -->
+        <div id="fb-root"></div>
+        <script>
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+        </script>
+        <!-- Google -->
+        <script>
+        var _gaq = [['_setAccount', 'UA-29437447-1'], ['_trackPageview']];
+        (function(d, t) {
+            var g = d.createElement(t),
+                s = d.getElementsByTagName(t)[0];
+            g.src = '//www.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g, s);
+        }(document, 'script'));
+        window.onerror = function(message, file, line) {
+            var sFormattedMessage = '[' + file + ' (' + line + ')] ' + message;
+            _gaq.push(['_trackEvent', 'Exceptions', 'Application', sFormattedMessage, null, true]);
+        };
+        </script>
+    </body>
+</html>

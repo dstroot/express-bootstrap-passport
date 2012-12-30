@@ -1,0 +1,35 @@
+// Navbar 
+// ================================================== 
+div.navbar.navbar-inverse.navbar-fixed-top
+  div.container
+    button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
+      span.icon-bar
+      span.icon-bar
+      span.icon-bar 
+    a.brand(href='/') #{title}
+    div.nav-collapse.collapse
+      ul.nav
+        li.active
+          a(href='/') Home
+        li
+          a(href='/events/demo') View Poll
+        li
+          a(href='/poll/demo') View Example
+        li
+          a(href='/newpoll') New Poll
+        //li
+            if session
+              div#logoutsection.pull-right
+                a#logout-btn.btn.btn-info.pull-right.top-bar-form-button(href='/logout') Logout
+                p#loginprompt.pull-right.login-prompt #{session.user.username} 
+                  small logged In
+            else
+              div
+                a#signup-btn.btn.pull-right.btn-small(href='#signup-modal', data-toggle="modal") Sign Up
+        if user  
+          //typeof user != 'undefined'
+          li 
+            a(href="/logout") Logout
+        else
+          li
+            a(href='/login') Login
