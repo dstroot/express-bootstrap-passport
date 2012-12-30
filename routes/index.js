@@ -45,9 +45,9 @@ db.exists(function (err, exists) {
         } else {
             console.log('Done! Created Database');
         }
-        /* ===================================================
-           Define & add the design views
-        ====================================================== */  
+        // ===================================================
+        //   Define & add the design views
+        //====================================================  
         var designdoc = {
           "views": {
             "byUserName": {
@@ -72,9 +72,9 @@ db.exists(function (err, exists) {
           }
         });
 
-        /* ===================================================
-           Save a test User
-        ====================================================== */
+        //===================================================
+        //   Save a test User
+        //===================================================
         var testuser = {
             jsonType: 'user',
             username: 'Dan',
@@ -101,7 +101,7 @@ db.exists(function (err, exists) {
             });
           } else {
             // Handle success
-            //console.log('USER: ' + doc + '\n');
+            console.log('USER: ' + doc + '\n');
           }
         });
       });
@@ -221,8 +221,8 @@ module.exports = function(app) {
 };
 
 /* ==============================================================
-    Here's route code (the rendering is placed in a variable and
-    called in the routing above)
+    Here's route code (the rendering function is placed in a 
+    variable andcalled in the routing above)
 =============================================================== */
 
 //POST /signup

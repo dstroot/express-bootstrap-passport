@@ -7,11 +7,11 @@ var express         = require('express')
   , http            = require('http')
   , path            = require('path')
   , fs              = require('fs')
+  , config          = require('./config')
   , UglifyJS        = require("uglify-js")        // https://npmjs.org/package/uglify-js
   , lessMiddleware  = require('less-middleware')  // https://npmjs.org/package/less-middleware
-  , config          = require('./config')
-  , flash           = require('connect-flash')    // needed for passport?
-  , passport        = require('passport')
+  , flash           = require('connect-flash')    // https://npmjs.org/package/connect-flash (needed for passport?)
+  , passport        = require('passport')         // https://npmjs.org/package/passport
   , LocalStrategy   = require('passport-local').Strategy;
 
 var app = express();
@@ -48,10 +48,12 @@ app.configure(function(){
   app.use(express.cookieParser('your secret here'));
   app.use(flash());  // for passport stuff
   app.use(express.session());
-  // Initialize Passport!  Also use passport.session() middleware, to support
-  // persistent login sessions (recommended).
+  // Initialize Passport!  
+  //   Also use passport.session() middleware, to support
+  //   persistent login sessions (recommended).
   app.use(passport.initialize());
   app.use(passport.session());
+
   app.use(function(req, res, next) {
     if(req.isAuthenticated()) {
       res.locals.user = req.user
@@ -74,6 +76,7 @@ app.configure(function(){
    , debug: true
   }));
   app.use(express.static(path.join(__dirname, 'public')));
+  // Add error handling
   app.use(function(err, req, res, next){
     console.error(err.stack);
     res.render('500', { 
