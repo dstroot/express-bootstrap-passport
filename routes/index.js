@@ -114,6 +114,7 @@ var testuser = {
     jsonType: 'user',
     username: 'Dan',
     password: hash('passw0rd', 'Dan'),
+    email: 'dan@awesomedomain.com',
     created_at: new Date(),
     updated_at: new Date()
 };

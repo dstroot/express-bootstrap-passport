@@ -2,15 +2,7 @@ extends layout
 
 block content
 
-  header.bs-docs-jumbotron.subhead
+  header.jumbotron.subhead
     div.container
-      h1 Welcome!
-      p There are three simple steps to run your own live poll.
-  div.container
-    ol
-      li
-        p Create your questions and answers
-      li
-        p Run it!
-    p Ooops. There's only two steps. :)  We'll walk through them together. 
-      a.btn.btn-primary(href='/addpoll) Next>
+      h1 Welcome #{user.username}!
+      p It's great to have you here!

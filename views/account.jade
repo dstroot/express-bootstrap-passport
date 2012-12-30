@@ -2,6 +2,15 @@ extends layout
 
 block content
 
-  div.container
-    h2 Username: #{user.username}
-    h2 Email: #{user.email}
+  header.jumbotron.subhead
+    div.container
+      h2 Your Username: #{user.username}
+      h2 Your Email: #{user.email}
+      h2 Your Password: 
+      p
+        small #{user.password}
+      br 
+      br 
+      br 
+      p 
+        em (See, we don't know your password!  We hash it before we save it. So never see it or store it!)

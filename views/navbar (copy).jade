@@ -3,9 +3,9 @@
 div.navbar.navbar-inverse.navbar-fixed-top
   div.container
     button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
-      span.icon-bar
-      span.icon-bar
-      span.icon-bar 
+      |span.icon-bar
+      |span.icon-bar
+      |span.icon-bar
     a.brand(href='/') #{title}
     div.nav-collapse.collapse
       ul.nav
@@ -26,8 +26,7 @@ div.navbar.navbar-inverse.navbar-fixed-top
             else
               div
                 a#signup-btn.btn.pull-right.btn-small(href='#signup-modal', data-toggle="modal") Sign Up
-        if user  
-          //typeof user != 'undefined'
+        if typeof user != 'undefined'
           li 
             a(href="/logout") Logout
         else

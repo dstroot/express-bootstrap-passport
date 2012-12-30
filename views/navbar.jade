@@ -6,21 +6,19 @@ div.navbar.navbar-inverse.navbar-fixed-top
       button.btn.btn-navbar(type='button', data-toggle='collapse', data-target='.nav-collapse')
         span.icon-bar
         span.icon-bar
-        span.icon-bar 
+        span.icon-bar
       a.brand(href='/') #{title}
       div.nav-collapse.collapse
         ul.nav
           li.active
             a(href='/') Home
           li
-            a(href='./getting-started.html') Get Started
-          li
-            a(href='./scaffolding.html') Scaffolding
-          li
-            a(href='./base-css.html') Base CSS
-          li
-            a(href='./components.html') Components
-          li
-            a(href='./javascript.html') Javascript
-          li
-            a(href='./customize.html') Customize
+            a(href='/account') Test access redirection
+          if typeof user != 'undefined'
+            li 
+              a(href="/logout") Logout
+          else
+            li
+              a(href='/signup') Signup
+            li
+              a(href='/login') Login

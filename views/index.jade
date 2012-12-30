@@ -15,15 +15,29 @@ block content
         li
           a(href='./getting-started.html#examples') Examples
         li
+          a(href="./extend.html") Extend
+        li
           | Version #{version}
-
+  //- Social Section
+  div.bs-docs-social
+    div.container
+    ul.bs-docs-social-buttons
+      li
+        iframe.github-btn(src="http://ghbtns.com/github-btn.html?user=twitter&repo=bootstrap&type=watch&count=true", allowtransparency="true", frameborder="0", scrolling="0", width="100px", height="20px")
+      li
+        iframe.github-btn(src="http://ghbtns.com/github-btn.html?user=twitter&repo=bootstrap&type=fork&count=true", allowtransparency="true", frameborder="0", scrolling="0", width="102px", height="20px")
+      li.follow-btn
+        a(href="https://twitter.com/twbootstrap", class="twitter-follow-button", data-link-color="#0069D6", data-show-count="true") Follow @twbootstrap
+      li.tweet-btn
+        a(href="https://twitter.com/share", class="twitter-share-button", data-url="http://twitter.github.com/bootstrap/", data-count="horizontal", data-via="twbootstrap", data-related="mdo:Creator of Twitter Bootstrap") Tweet
+  //- Marketing Section
   div.container
     div.marketing
-      //h1 Introducing #{title}
-      //p.marketing-byline Need reasons to love #{title}? Look no further.
+      h1 Introducing #{title}.
+      p.marketing-byline Need reasons to love #{title}? Look no further.
       div.row
         div.span4
-          //img.marketing-img(src='../img/bs-docs-twitter-github.png')
+          img.marketing-img(src='../img/bs-docs-twitter-github.png')
           h2 By nerds, for nerds.
           p Built at Twitter by 
             a(href='http://twitter.com/mdo') @mdo
@@ -37,13 +51,13 @@ block content
             a(href='http://github.com') GitHub
             |  to help nerds do awesome stuff on the web.
         div.span4
-          //img.marketing-img(src='../img/bs-docs-responsive-illustrations.png')
+          img.marketing-img(src='../img/bs-docs-responsive-illustrations.png')
           h2 Made for everyone.
-          p Bootstrap was made to not only look and behave great in the latest desktop browsers [including IE8+], but in tablet and smartphone browsers via 
+          p Bootstrap was made to not only look and behave great in the latest desktop browsers (as well as IE7!), but in tablet and smartphone browsers via 
             a(href='./scaffolding.html#responsive') responsive CSS
             |  as well.
         div.span4
-          //img.marketing-img(src='../img/bs-docs-bootstrap-features.png')
+          img.marketing-img(src='../img/bs-docs-bootstrap-features.png')
           h2 Packed with features.
           p A 12-column responsive 
             a(href='./scaffolding.html#gridSystem') grid
@@ -52,5 +66,24 @@ block content
             | , typography, form controls, and even a 
             a(href='./customize.html') web-based Customizer
             |  to make Bootstrap your own.
-  
-  //- hr.soften
+      hr.soften
+      //- Site Examples
+      h1 Built with Bootstrap.
+      P.marketing-byline For even more sites built with Bootstrap, 
+        a(href="http://builtwithbootstrap.tumblr.com/", target="_blank") visit the unofficial Tumblr
+        |  or 
+        a( href="./getting-started.html#examples") browse the examples
+      div.row-fluid
+        ul.thumbnails.example-sites
+          li.span3
+            a.thumbnail(href="http://soundready.fm/", target="_blank") 
+              img(src="/img/example-sites/soundready.png", alt="SoundReady.fm")
+          li.span3
+            a.thumbnail(href="http://kippt.com/", target="_blank") 
+              img(src="/img/example-sites/kippt.png", alt="Kippt")
+          li.span3
+            a.thumbnail(href="http://www.gathercontent.com/", target="_blank") 
+              img(src="/img/example-sites/gathercontent.png", alt="Gather Content")
+          li.span3
+            a.thumbnail(href="http://www.jshint.com/", target="_blank") 
+              img(src="/img/example-sites/jshint.png", alt="JS Hint")
