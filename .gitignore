@@ -6,13 +6,14 @@ config.js
 ##############################
 node_modules
 
-# Don't worry about the bundled files
+# Don't worry about the bundled js files
 ######################################
-public/js/bundle.js
+public/js/bootstrap.js
 
 # Don't track compiled css
 ###########################
 public/css/bootstrap.css
+public/css/responsive.css
 
 # Don's track OS generated files
 ################################
