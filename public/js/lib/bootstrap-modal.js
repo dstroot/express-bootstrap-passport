@@ -1,5 +1,5 @@
 /* =========================================================
- * bootstrap-modal.js v3.0.0
+ * bootstrap-modal.js v2.2.2
  * http://twitter.github.com/bootstrap/javascript.html#modals
  * =========================================================
  * Copyright 2012 Twitter, Inc.
@@ -60,7 +60,8 @@
             that.$element.appendTo(document.body) //don't move modals dom position
           }
 
-          that.$element.show()
+          that.$element
+            .show()
 
           if (transition) {
             that.$element[0].offsetWidth // force reflow

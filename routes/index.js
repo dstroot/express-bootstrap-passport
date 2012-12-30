@@ -6,15 +6,12 @@ var fs              = require('fs')
   , path            = require('path')
   , config          = require('../config')
   , utils 					= require('../utils')
-  , twiliosig 			= require('twiliosig')
-  , events 					= require('../events')
   , flash           = require('connect-flash')
   , util            = require('util')
   , passport        = require('passport')
   , LocalStrategy   = require('passport-local').Strategy
   , cradle          = require('cradle')
-  , crypto          = require('crypto')
-  , io;
+  , crypto          = require('crypto');
 
 /* ===================================================
    Cradle connection to Cloudant
@@ -80,50 +77,8 @@ db.exists(function (err, exists) {
 });
 
 /* ===================================================
-   Create the design docs (Views)
-   * here in case the nested method above craps out *
-======================================================
-db.exists(function (err, exists) {
-  if (err) {
-    console.log('Error2', err);
-  } else if (exists) {
-
-    // Define the design views    
-    var designdoc = {
-      "views": {
-        "byUserName": {
-          "map": "function (doc) { if (doc.username) { emit(doc.username, doc) } } "
-              },
-        "byUserEmail": {
-          "map": "function (doc) { if (doc.email) { emit(doc.email, doc) } } "
-        },
-        "all": {
-          "map": "function (doc) { if (doc.name) emit(doc.name, doc); }"
-        }  
-      }
-    };
-
-    // Save the doc
-    db.save('_design/user', designdoc, function (err, res) {
-      if (err) {
-        // Handle error
-        console.log('Cannot add Design Doc!', err);
-      } else {
-       // Handle success
-       console.log('Added Design Doc', res);
-      }
-    });
-
-  } else {
-    console.log('Database does not exist');
-  }
-});
-*/
-
-/* ===================================================
-   Test your couchDB connection
+   Test your couchDB connection (save and get a doc)
 ====================================================== */
-
 db.save('document_key', {
     name: 'A Funny Name'
 }, function (err, res) {
@@ -148,7 +103,6 @@ db.save('document_key', {
 /* ===================================================
    Save a test User
 ====================================================== */
-// Is hash needed here?
 var hash = function (pass, salt) {
   var h = crypto.createHash('sha512');
   h.update(pass);
@@ -158,8 +112,8 @@ var hash = function (pass, salt) {
 
 var testuser = {
     jsonType: 'user',
-    username: 'Daniel',
-    password: hash('Boogers', 'Daniel'),
+    username: 'Dan',
+    password: hash('passw0rd', 'Dan'),
     created_at: new Date(),
     updated_at: new Date()
 };
@@ -170,107 +124,13 @@ db.save(testuser.username,   // Document Name
     if(!error) {
       console.log("Added Test User", result);
     } else {
-      console.log("Error4: ", error);
+      console.log("Error: ", error);
     }
 });
-/*
-User Profile  http://passportjs.org/guide/profile/
 
-When authenticating using a third-party service such as Facebook 
-or Twitter, user profile information will often be available. Each 
-service tends to have a different way of encoding this information. 
-To make integration easier, Passport normalizes profile information 
-to the extent possible.
-
-Normalized profile information conforms to the contact schema 
-established by Portable Contacts. The common fields available are 
-outlined in the following table.
-*/
-
-var userRecord =
-          {
-            "provider": "Twitter",
-            "id": "703887",
-            "displayName": "Mork Hashimoto",
-            "name": {
-              "familyName": "Hashimoto",
-              "givenName": "Mork"
-            },
-            "birthday": "0000-01-16",
-            "gender": "male",
-            "drinker": "heavily",
-            "tags": [
-              "plaxo guy",
-              "favorite"
-            ],
-            "emails": [
-              {
-                "value": "mhashimoto-04@plaxo.com",
-                "type": "work",
-                "primary": "true"
-              },
-              {
-                "value": "mhashimoto-04@plaxo.com",
-                "type": "home"
-              }
-            ],
-            "urls": [
-              {
-                "value": "http://www.seeyellow.com",
-                "type": "work"
-              },
-              {
-                "value": "http://www.angryalien.com",
-                "type": "home"
-              }
-            ],
-            "phoneNumbers": [
-              {
-                "value": "KLONDIKE5",
-                "type": "work"
-              },
-              {
-                "value": "650-123-4567",
-                "type": "mobile"
-              }
-            ],
-            "photos": [
-              {
-                "value": "http://sample.site.org/photos/12345.jpg",
-                "type": "thumbnail"
-              }
-            ],
-            "ims": [
-              {
-                "value": "plaxodev8",
-                "type": "aim"
-              }
-            ],
-            "addresses": [
-              {
-                "type": "home",
-                "streetAddress": "742 Evergreen Terrace\nSuite 123",
-                "locality": "Springfield",
-                "region": "VT",
-                "postalCode": "12345",
-                "country": "USA",
-                "formatted": "742 Evergreen Terrace\nSuite 123\nSpringfield, VT 12345 USA"
-              }
-            ],
-            "accounts": [
-              {
-                "domain": "plaxo.com",
-                "userid": "2706"
-              }
-            ]
-          };
-
-// fake users for test data
-var users = [
-    { id: 1, username: 'bob', password: 'secret', email: 'bob@example.com' }
-  , { id: 2, username: 'joe', password: 'birthday', email: 'joe@example.com' }
-];
-
+/* ===================================================
+   Needed for Passport 
+====================================================== */
 function findById(id, fn) {
 
   db.get(id, function(error, result) {
@@ -281,66 +141,43 @@ function findById(id, fn) {
     }
   });
 
-
-
-  //var idx = id - 1;
-  //if (users[idx]) {
-  //  fn(null, users[idx]);
-  //} else {
-  //  fn(new Error('User ' + id + ' does not exist'));
-  //}
 }
-  // Query users by ID
-  //, findByID = exports.findById = function(id, callback) {
-  //    users.get('id:'+id, function(error, result) {
-  //      if (!error) {
-  //        callback(null, result);
-  //      } else {
-  //        callback(new Error('User ' + id + ' does not exist'));
-  //      }
-  //    });
-  //}
 
+/* ===================================================
+   Needed for Passport 
+====================================================== */
+function findByUsername(username, fn) {
+  db.get(username, function(error, result) {
+    if (!error) {
+      return fn(null, result);
+    } else {
+      console.log('Error in findByUsername!', error);
+      return fn(null, null);
+    }
+  });
+}
 
-//function findByUsername(username, fn) {
-//  for (var i = 0, len = users.length; i < len; i++) {
-//    var user = users[i];
-//    if (user.username === username) {
-//      return fn(null, user);
-//    }
-//  }
-//  return fn(null, null);
-//}
-
-  /* ===================================================
-     Query by Username
-  ====================================================== */
-  function findByUsername(username, fn) {
-    db.get(username, function(error, result) {
-      if (!error) {
-        return fn(null, result);
-      } else {
-        console.log('Error in findByUsername!', error);
-        return fn(null, null);
-      }
-    });
-  }
-
-// Simple route middleware to ensure user is authenticated.
-//   Use this route middleware on any resource that needs to be protected.  If
-//   the request is authenticated (typically via a persistent login session),
-//   the request will proceed.  Otherwise, the user will be redirected to the
-//   login page.
+/* ===================================================
+   Needed for Passport 
+====================================================== */
+/*  Simple route middleware to ensure user is authenticated.
+ *  Use this route middleware on any resource that needs to 
+ *  be protected.  If the request is authenticated (typically 
+ *  via a persistent login session), the request will proceed.
+ *  Otherwise, the user will be redirected to the login page. */                 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
-  res.redirect('/login')
+  res.redirect('/login');
 }
 
-// Passport session setup.
-//   To support persistent login sessions, Passport needs to be able to
-//   serialize users into and deserialize users out of the session.  Typically,
-//   this will be as simple as storing the user ID when serializing, and finding
-//   the user by ID when deserializing.
+/* ===================================================
+   Needed for Passport 
+====================================================== */
+/*   Passport session setup.
+ *   To support persistent login sessions, Passport needs to be able to
+ *   serialize users into and deserialize users out of the session.  Typically,
+ *   this will be as simple as storing the user ID when serializing, and finding
+ *   the user by ID when deserializing.  */
 passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
@@ -351,6 +188,9 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
+/* ===================================================
+   Needed for Passport 
+====================================================== */
 // Use the LocalStrategy within Passport.
 //   Strategies in passport require a `verify` function, which accept
 //   credentials (in this case, a username and password), and invoke a callback
@@ -371,7 +211,7 @@ passport.use(new LocalStrategy(
         if (user.password != hash(password, user.username)) { return done(null, false, { message: 'Invalid password' }); }
         //if (user.password != password) { return done(null, false, { message: 'Invalid password' }); }
         return done(null, user);
-      })
+      });
     });
   }
 ));
@@ -379,28 +219,22 @@ passport.use(new LocalStrategy(
 /* ==============================================================
     Here's all the routing
 =============================================================== */
-module.exports = function(app, socketio) {
-  
-  io = socketio;
+module.exports = function(app) {
 
   // GET Routes
   app.get('/', index);
-  app.get('/events/:shortname', ensureAuthenticated, event);
   app.get('/account', ensureAuthenticated, account);
   app.get('/signup', signup);
-  app.get('/welcome', welcome);
   app.get('/login', login);
   app.get('/logout', logout);
-  app.get('/poll/:shortname', ensureAuthenticated, event);
+  app.get('/welcome', welcome);
 	app.get('/robots*', robots);
 	app.get('/humans*', humans);
-	app.get('/users', userlist);
 	// 404 route (always last!)
 	app.get('/*', fourofour);
   
   //POST Routes
   app.post('/signup', registerUser);
-  app.post('/vote/sms', voteSMS);
   app.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), postlogin);
 
 };
@@ -409,7 +243,6 @@ module.exports = function(app, socketio) {
     Here's route code (the rendering is placed in a variable and
     called in the routing above)
 =============================================================== */
-
 
 //POST /signup
 ///////////////////////////////////////////////////////////////
@@ -472,34 +305,6 @@ var signup = function(req, res){
   });
 };
 
-//GET /events/shortname
-//////////////////////////////////////////////////////////////
-var event = function(req, res){
-    
-  events.findBy('shortname', req.params.shortname, function(err, event) {
-    if (event) {
-      // remove sensitive data
-      event.voteoptions.forEach(function(vo){ 
-          delete vo.numbers;
-      });
-
-      res.render('event', {
-          user: req.user,
-          name: event.name, 
-          shortname: event.shortname, 
-          state: event.state,
-          phonenumber: utils.formatPhone(event.phonenumber), 
-          voteoptions: JSON.stringify(event.voteoptions)   
-      });
-    }
-    else {
-      res.statusCode = 404;
-      res.send('We could not locate your event');
-    }
-  });
-
-};
-
 //GET /account
 //////////////////////////////////////////////////////////////
 var account = function(req, res){
@@ -517,34 +322,6 @@ var login =function(req, res){
 var logout = function(req, res){
   req.logout();
   res.redirect('/');
-};
-
-//GET /poll/shortname
-///////////////////////////////
-var poll = function(req, res){
-    
-  events.findBy('shortname', req.params.shortname, function(err, poll) {
-    if (poll) {
-      // remove sensitive data
-      poll.voteoptions.forEach(function(vo){ 
-          delete vo.numbers;
-      });
-
-      res.render('poll', {
-          user: req.user,
-          name: poll.name, 
-          shortname: poll.shortname, 
-          state: poll.state,
-          phonenumber: utils.formatPhone(poll.phonenumber), 
-          voteoptions: JSON.stringify(poll.voteoptions)   
-      });
-    }
-    else {
-      res.statusCode = 404;
-      res.send('We could not locate your event');
-    }
-  });
-
 };
 
 //GET /robots
@@ -567,12 +344,6 @@ var humans = function(req, res) {
   });
 };
 
-//GET /users
-///////////////////////////////
-var userlist = function(req, res){
-  res.send("respond with a resource");
-};
-
 ///GET (something we don't a route for)
 ///////////////////////////////
 var fourofour = function(req, res, next) {
@@ -582,69 +353,10 @@ var fourofour = function(req, res, next) {
     if (req.url.indexOf('/img') == 0 ) return next();
     if (req.url.indexOf('/ico') == 0 ) return next();
     if (req.url.indexOf('/js') == 0 ) return next();
-    if (req.url.indexOf('/fonts') == 0 ) return next();
     if (req.url.indexOf('humans*.*') == 0 ) return next();
     if (req.url.indexOf('robots*.*') == 0 ) return next();
     
     res.render('404', { url: req.url });
-};
-
-//POST an event
-///////////////////////////////
-var voteSMS = function(request, response) {
-
-    if (twiliosig.valid(request, config.twilio.key) || config.disableTwilioSigCheck) {
-        response.header('Content-Type', 'text/xml');
-        var body = request.param('Body').trim();
-        
-        // the number the vote it being sent to (this should match an Event)
-        var to = request.param('To');
-        
-        // the voter, use this to keep people from voting more than once
-        var from = request.param('From');
-
-        events.findBy('phonenumber', to, function(err, event) {
-            if (err) {
-                console.log(err);
-                // silently fail for the user
-                response.send('<Response></Response>'); 
-            }
-            else if (event.state == "off") {
-                response.send('<Response><Sms>Voting is now closed.</Sms></Response>');                 
-            }
-            else if (!utils.testint(body)) {
-                console.log('Bad vote: ' + event.name + ', ' + from + ', ' + body);
-                response.send('<Response><Sms>Sorry, invalid vote. Please text a number between 1 and '+ event.voteoptions.length +'</Sms></Response>'); 
-            } 
-            else if (utils.testint(body) && (parseInt(body) <= 0 || parseInt(body) > event.voteoptions.length)) {
-                console.log('Bad vote: ' + event.name + ', ' + from + ', ' + body + ', ' + ('[1-'+event.voteoptions.length+']'));
-                response.send('<Response><Sms>Sorry, invalid vote. Please text a number between 1 and '+ event.voteoptions.length +'</Sms></Response>'); 
-            } 
-            else if (events.hasVoted(event, from)) {
-                console.log('Denying vote: ' + event.name + ', ' + from);
-                response.send('<Response><Sms>Sorry, you are only allowed to vote once.</Sms></Response>'); 
-            }
-            else {
-                
-                var vote = parseInt(body);
-                    
-                events.saveVote(event, vote, from, function(err, res) {
-                    if (err) {
-                        response.send('<Response><Sms>We encountered an error saving your vote. Try again?</Sms></Response>');  
-                    }
-                    else {
-                        console.log('Accepting vote: ' + event.name + ', ' + from);
-                        io.sockets.in(event.shortname).emit('vote', vote);
-                        response.send('<Response><Sms>Thanks for your vote for ' + res.name + '. Powered by Twilio.</Sms></Response>');   
-                    }
-                });
-            }  
-        }); 
-    }
-    else {
-        response.statusCode = 403;
-        response.render('forbidden');
-    }
 };
 
 // POST /login
@@ -657,5 +369,5 @@ var voteSMS = function(request, response) {
 //POST Login
 ///////////////////////////////
 var postlogin = function(req, res) {
-    res.redirect('/events/demo');
+    res.redirect('/welcome');
 };

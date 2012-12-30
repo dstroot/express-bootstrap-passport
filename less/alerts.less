@@ -8,16 +8,16 @@
 
 .alert {
   padding: 8px 35px 8px 14px;
-  margin-bottom: @line-height-base;
+  margin-bottom: @baseLineHeight;
   text-shadow: 0 1px 0 rgba(255,255,255,.5);
-  background-color: @state-warning-background;
-  border: 1px solid @state-warning-border;
-  border-radius: @border-radius-base;
+  background-color: @warningBackground;
+  border: 1px solid @warningBorder;
+  .border-radius(@baseBorderRadius);
 }
 .alert,
 .alert h4 {
   // Specified for the h4 to prevent conflicts of changing @headingsColor
-  color: @state-warning-text;
+  color: @warningText;
 }
 .alert h4 {
   margin: 0;
@@ -28,7 +28,7 @@
   position: relative;
   top: -2px;
   right: -21px;
-  line-height: @line-height-base;
+  line-height: @baseLineHeight;
 }
 
 
@@ -36,30 +36,30 @@
 // -------------------------
 
 .alert-success {
-  background-color: @state-success-background;
-  border-color: @state-success-border;
-  color: @state-success-text;
+  background-color: @successBackground;
+  border-color: @successBorder;
+  color: @successText;
 }
 .alert-success h4 {
-  color: @state-success-text;
+  color: @successText;
 }
 .alert-danger,
 .alert-error {
-  background-color: @state-error-background;
-  border-color: @state-error-border;
-  color: @state-error-text;
+  background-color: @errorBackground;
+  border-color: @errorBorder;
+  color: @errorText;
 }
 .alert-danger h4,
 .alert-error h4 {
-  color: @state-error-text;
+  color: @errorText;
 }
 .alert-info {
-  background-color: @state-info-background;
-  border-color: @state-info-border;
-  color: @state-info-text;
+  background-color: @infoBackground;
+  border-color: @infoBorder;
+  color: @infoText;
 }
 .alert-info h4 {
-  color: @state-info-text;
+  color: @infoText;
 }
 
 

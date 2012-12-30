@@ -1,22 +1,23 @@
 extends layout
 
 block content
-  // Main Content
-  //=================================================
-  div.jumbotron.masthead
+  include signupModal
+  include signupErrorModal
+  div.bs-docs-jumbotron.masthead
     div.container
       h1= title
       p= description
       p
-        a.btn.btn-primary.btn-large(href='public/bootstrap.zip') Download #{title}
+        a.btn.btn-primary.btn-large(href='/signup') Try #{title} >>
+        |  
+        a.btn.btn-primary.btn-large(href='/login') Login
       ul.masthead-links
         li
           a(href='http://github.com/twitter/bootstrap') GitHub project
         li
           a(href='./getting-started.html#examples') Examples
         li
-          | Version #{version}
-
+          |#{title} Version #{version}
   div.container
     div.marketing
       //h1 Introducing #{title}

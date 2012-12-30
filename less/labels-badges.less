@@ -4,29 +4,42 @@
 
 
 // Base classes
+.label,
 .badge {
   display: inline-block;
   padding: 2px 4px;
-  font-size: @font-size-base * .846;
+  font-size: @baseFontSize * .846;
   font-weight: bold;
   line-height: 14px; // ensure proper line-height if floated
-  color: #fff;
+  color: @white;
   vertical-align: baseline;
   white-space: nowrap;
   text-shadow: 0 -1px 0 rgba(0,0,0,.25);
   background-color: @grayLight;
-  border-radius: 3px;
+}
+// Set unique padding and border-radii
+.label {
+  .border-radius(3px);
+}
+.badge {
+  padding-left: 9px;
+  padding-right: 9px;
+  .border-radius(9px);
+}
 
-  // Empty labels/badges collapse
+// Empty labels/badges collapse
+.label,
+.badge {
   &:empty {
     display: none;
   }
 }
 
 // Hover state, but only for links
-a.badge {
-  &:hover {
-    color: #fff;
+a {
+  &.label:hover,
+  &.badge:hover {
+    color: @white;
     text-decoration: none;
     cursor: pointer;
   }
@@ -34,19 +47,20 @@ a.badge {
 
 // Colors
 // Only give background-color difference to links (and to simplify, we don't qualifty with `a` but [href] attribute)
+.label,
 .badge {
   // Important (red)
-  &-danger            { background-color: @state-error-text; }
-  &-danger[href]      { background-color: darken(@state-error-text, 10%); }
+  &-important         { background-color: @errorText; }
+  &-important[href]   { background-color: darken(@errorText, 10%); }
   // Warnings (orange)
-  &-warning           { background-color: #f89406; }
-  &-warning[href]     { background-color: darken(#f89406, 10%); }
+  &-warning           { background-color: @orange; }
+  &-warning[href]     { background-color: darken(@orange, 10%); }
   // Success (green)
-  &-success           { background-color: @state-success-text; }
-  &-success[href]     { background-color: darken(@state-success-text, 10%); }
+  &-success           { background-color: @successText; }
+  &-success[href]     { background-color: darken(@successText, 10%); }
   // Info (turquoise)
-  &-info              { background-color: @state-info-text; }
-  &-info[href]        { background-color: darken(@state-info-text, 10%); }
+  &-info              { background-color: @infoText; }
+  &-info[href]        { background-color: darken(@infoText, 10%); }
   // Inverse (black)
   &-inverse           { background-color: @grayDark; }
   &-inverse[href]     { background-color: darken(@grayDark, 10%); }
@@ -54,12 +68,14 @@ a.badge {
 
 // Quick fix for labels/badges in buttons
 .btn {
+  .label,
   .badge {
     position: relative;
     top: -1px;
   }
 }
 .btn-mini {
+  .label,
   .badge {
     top: 0;
   }

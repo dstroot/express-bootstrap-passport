@@ -1,11 +1,11 @@
 {
-  "name": "snapvotr",
-  "description": "testing integration of express and bootstrap",
-  "version": "0.0.1-2",
+  "name": "express-bootstrap-passport",
+  "description": "integration of express, bootstrap and passport",
+  "version": "0.0.1",
   "private": true,
   "analyze": false,
   "readme": "Nothing here!",
-  "subdomain": "snapvotr",
+  "subdomain": "",
   "author": {
     "name": "Dan Stroot",
     "email": "dan@thestroots.com"
@@ -22,9 +22,7 @@
     "jade": "*",
     "less-middleware": "*",
     "uglify-js": "2.2.x",
-    "socket.io": "0.9.x",
     "cradle": "0.6.x",
-    "twiliosig": "0.0.x",
     "connect-flash": "0.1.x",
     "passport": ">= 0.0.0",
     "passport-local": ">= 0.0.0",
