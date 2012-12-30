@@ -1,3 +1,9 @@
+'use strict'
+/* ==============================================================
+    Include required packages / Module Dependencies
+=============================================================== */
+var crypto          = require('crypto');
+
 exports.smsify = function(str) {
   if (str.length <= 160) { return str; }
   else { return str.substr(0,157)+'...'; }
@@ -28,4 +34,11 @@ exports.formatPhone = function(phonenum) {
         //invalid phone number
         return phonenum;
     }
+};
+
+exports.hash = function (pass, salt) {
+  var h = crypto.createHash('sha512');
+  h.update(pass);
+  h.update(salt);
+  return h.digest('base64');
 };
