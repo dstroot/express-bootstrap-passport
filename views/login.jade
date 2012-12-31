@@ -13,14 +13,18 @@ block content
         form.form-horizontal(action='/login', method='post')
           fieldset
             legend Sign in!
-            div.control-group
+            //- div.control-group
               label.control-label(for='inputEmail') Email
               div.controls
-                input#inputEmail(type='email', placeholder='you@youremail.com', required)
+                input#inputEmail(name='email', type='email', placeholder='you@youremail.com', required)
+            div.control-group
+                label.control-label(for='inputUserName') Your Name
+                div.controls
+                  input#inputUserName(name='username', type='text', placeholder='Username')
             div.control-group
               label.control-label(for='inputPassword') Password
               div.controls
-                input#inputPassword(type='password', placeholder='Passw0rd')
+                input#inputPassword(name='password', type='password', placeholder='Passw0rd')
             div.control-group
               div.controls
                 button.btn(type='submit') Sign In
