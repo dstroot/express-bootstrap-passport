@@ -75,7 +75,7 @@ app.configure(function(){
    , compress: true
    , debug: true
   }));
-  app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.static(path.join(__dirname, '/public')));
   // Add error handling
   app.use(function(err, req, res, next){
     console.error(err.stack);
@@ -120,20 +120,19 @@ app.configure('production', function(){
 function bundle() {
 
     var scripts = [
-        // Bootstrap libraries  https://github.com/twitter/bootstrap/
-        'public/js/lib/bootstrap-affix.js'
-       ,'public/js/lib/bootstrap-alert.js'
-       ,'public/js/lib/bootstrap-button.js'
-       ,'public/js/lib/bootstrap-carousel.js'
-       ,'public/js/lib/bootstrap-collapse.js'
-       ,'public/js/lib/bootstrap-dropdown.js'
-       ,'public/js/lib/bootstrap-modal.js'
-       ,'public/js/lib/bootstrap-popover.js'
-       ,'public/js/lib/bootstrap-scrollspy.js'
-       ,'public/js/lib/bootstrap-tab.js'
-       ,'public/js/lib/bootstrap-tooltip.js'
-       ,'public/js/lib/bootstrap-transition.js'
-       ,'public/js/lib/bootstrap-typeahead.js' 
+        'public/js/lib/bootstrap-transition.js'
+      , 'public/js/lib/bootstrap-alert.js'
+      , 'public/js/lib/bootstrap-modal.js'
+      , 'public/js/lib/bootstrap-dropdown.js'
+      , 'public/js/lib/bootstrap-scrollspy.js'
+      , 'public/js/lib/bootstrap-tab.js'
+      , 'public/js/lib/bootstrap-tooltip.js'
+      , 'public/js/lib/bootstrap-popover.js'
+      , 'public/js/lib/bootstrap-button.js'
+      , 'public/js/lib/bootstrap-collapse.js'
+      , 'public/js/lib/bootstrap-carousel.js'
+      , 'public/js/lib/bootstrap-typeahead.js'
+      , 'public/js/lib/bootstrap-affix.js'
     ];
     
     // Minify all the files

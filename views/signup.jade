@@ -26,6 +26,9 @@ block content
         if message
           p #{message}
 
+        //- set focus for the user
+        script $(document).ready(function () { $("#inputUserName").focus(); })
+
         form.form-horizontal(action='/register', method='post')
           fieldset
             Legend Sign up!

@@ -212,7 +212,7 @@ module.exports = function(app) {
 	app.get('/robots*', robots);
 	app.get('/humans*', humans);
 	// 404 route (always last!)
-	app.get('/*', fourofour);
+	//app.get('/*', fourofour);
   
   //POST Routes
   app.post('/register', register);
