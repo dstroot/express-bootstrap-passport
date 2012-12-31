@@ -66,6 +66,11 @@
 # Example:
 # *.png binary
 ##################################################################
-/public/ico/* binary
-/public/img/* binary
-/public/font/* binary
+*.png binary	
+*.jpg binary
+*.gif binary	
+*.jar binary	
+*.exe binary	
+*.eot binary	
+*.ttf binary	
+*.pdf binary
