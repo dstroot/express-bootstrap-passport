@@ -1,3 +1,5 @@
+//- http://twitter.github.com/bootstrap/base-css.html#forms
+//- https://github.com/visionmedia/jade
 extends layout
 
 block content
@@ -20,50 +22,31 @@ block content
                       span Login with Twitter
 
     div.row
-      div.span4.offset4
+      div.span4.offset2
         if message
           p #{message}
 
-        form(action='/signup', method='post')
-          div
-            label Username:
-            input(type='text', name='username')
-          div
-            label Email:
-            input(type='email', name='email')        
-          div
-            label Password:
-            input(type='password', name='password')
-          div
-            input(type='submit', value='Submit')
-
-  //-
-    div.row
-      div.span6.offset3
-        div.well
-          h2 Sign Up!
-          p It only takes a moment!
-          form(id="frm-signup")
-            fieldset
-              div
-                label E-mail Address:
-                input(type="email", id="email", name="email", class="span4", placeholder="yourname@youremail.com")
-                //span.help-inline We won't spam you!
-                div#hint 
-              div
-                label Username
-                input(type="text", name="username", class="span4", placeholder="your user name")
-                //span.help-inline Be cool!
-                br
-              div
-                label Password:
-                input(type="password", name="password", class="span4", placeholder="your password")
-                //span.help-inline Be secure!
-                br
-              div
-                input(type="submit", name="submit", value="create my account", class="btn btn-primary success")              
-          div#signup-error.hide alert.alert-error
-          p Already have an account? 
-            a(href="/login", id="btn-login") Login
+        form.form-horizontal(action='/register', method='post')
+          fieldset
+            Legend Sign up!
+            div.control-group
+                label.control-label(for='inputUserName') Your Name
+                div.controls
+                  input#inputUserName(type='text', placeholder='Username')
+              div.control-group
+                label.control-label(for='inputEmail') Email
+                div.controls
+                  input#inputEmail(type='email', placeholder='you@youremail.com', required)
+              div.control-group
+                label.control-label(for='inputPassword') Password
+                div.controls
+                  input#inputPassword(type='password', placeholder='Passw0rd')
+              div.control-group
+                div.controls
+                  button.btn(type='submit') Sign Up
+        
+        div#signup-error.hide alert.alert-error
+        p Already have an account? 
+          a(href="/login") Sign In
       //Add additional script to validate the email address
-      script(type="text/javascript", src="../js/lib/jquery.mailcheck.min.js")
+        script(type="text/javascript", src="../js/lib/jquery.mailcheck.min.js")

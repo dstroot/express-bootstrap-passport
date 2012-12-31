@@ -7,7 +7,7 @@ var fs              = require('fs')
   , config          = require('../config')
   , utils 					= require('../utils')
   , flash           = require('connect-flash')
-  , util            = require('util')
+  //, util            = require('util')   // I don't know what this is
   , passport        = require('passport')
   , LocalStrategy   = require('passport-local').Strategy
   , cradle          = require('cradle');
@@ -215,7 +215,7 @@ module.exports = function(app) {
 	app.get('/*', fourofour);
   
   //POST Routes
-  app.post('/signup', registerUser);
+  app.post('/register', register);
   app.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), postlogin);
 
 };
@@ -224,40 +224,6 @@ module.exports = function(app) {
     Here's route code (the rendering function is placed in a 
     variable andcalled in the routing above)
 =============================================================== */
-
-//POST /signup
-///////////////////////////////////////////////////////////////
-var registerUser = function(req, res) {
-
-  var userdoc = {
-    jsonType: 'user',
-    username: req.body.username,
-    password: utils.hash(req.body.password, req.body.username),
-    email: req.body.email,
-    created_at: new Date(),
-    updated_at: new Date()
-  };
-
-  db.save(userdoc.username, 
-    userdoc, 
-    function(error, result) {
-      if(!error) {
-        // continue
-        console.log('Saved new user: success!' + result);
-        // make passportjs setup the user object, serialize the user ...
-        req.login(result, {}, function(err) {
-          if (err) { 
-            console.log('Passport login did not work!', err); 
-          } else {
-            res.redirect("/welcome");
-          }
-        });
-      } else {
-        result.send(error.status_code)
-      }
-    }
-  );
-}
 
 //GET / (index)
 ///////////////////////////////////////////////////////////////
@@ -338,12 +304,58 @@ var fourofour = function(req, res, next) {
     res.render('404', { url: req.url });
 };
 
+//POST /signup
+///////////////////////////////////////////////////////////////
+var register = function(req, res) {
+
+/* ==============================================================
+    This needs work.  We need to be sure we are not saving 
+    duplicate users and user email addresses.  In theory we
+    want a single user name/email combination.  We need a way
+    to pass back the error to the user also if they are
+    trying to create a duplicate account.  
+
+    The form values are passed in via req.body
+=============================================================== */
+
+  var userdoc = {
+    jsonType: 'user',
+    username: req.body.username,
+    password: utils.hash(req.body.password, req.body.username),
+    email: req.body.email,
+    created_at: new Date(),
+    updated_at: new Date()
+  };
+
+  db.save(userdoc.username, 
+    userdoc, 
+    function(error, result) {
+      if(!error) {
+        console.log('Saved new user: success!' + result);
+        // calling req.login below will make passportjs setup 
+        // the user object, serialize the user, etc.
+        // This has to be placed here *after* the database save 
+        // because the result gives us an object with an .id 
+        req.login(result, {}, function(err) {
+          if (err) { 
+            console.log('Passport login did not work!', err); 
+          } else {
+            res.redirect("/welcome");
+          }
+        });
+      } else {
+        result.send(error.status_code)
+      }
+    }
+  );
+}
+
 // POST /login
 //   Use passport.authenticate() as route middleware to authenticate the
 //   request.  If authentication fails, the user will be redirected back to the
 //   login page.  Otherwise, the primary route function function will be called.
 //
-//   curl -v -d "username=bob&password=secret" http://127.0.0.1:3000/login
+//   curl -v -d "username=Dan&password=passw0rd" http://127.0.0.1:3000/login
 //
 //POST Login
 ///////////////////////////////
