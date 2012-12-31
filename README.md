@@ -1,4 +1,4 @@
-# [Express + Bootstrap + Passport](http://twitter.github.com/express-bootstrap-passport/)
+# [Express + Bootstrap + Passport](https://github.com/dstroot/express-bootstrap-passport)
 
 ### [Bootstrap 2.2.2](http://twitter.github.com/bootstrap/) and [Express 3.0.5](http://expressjs.com/) using [Jade](https://github.com/visionmedia/jade) templates, and [Passport](https://github.com/jaredhanson/passport) authentication.  We also use a few very helpful modules:
 - **less-middeware**

@@ -1,0 +1,71 @@
+# https://help.github.com/articles/dealing-with-line-endings
+#################################################################
+# This file overrides the core.autocrlf setting, allowing you 
+# to ensure consistant behaviour for all users regardless of 
+# their git settings.
+#
+# The advantage of this is that your EOL configuration now travels 
+# with your repository and you don't need to worry about whether 
+# or not collaborators have the proper global settings.
+#################################################################
+
+
+# Automatic Line Endings (text=auto)
+##################################################################
+# This setting will tell git to handle the files specified 
+# automatically. This is a good default option but I don't prefer
+# it because I'd rather use one of the more explicit options below.
+#
+# Example:
+# foo.js text=auto 
+##################################################################
+
+
+# Commit with LF, checkout in OS's native line endings (text)
+##################################################################
+# This setting tells git to always normalize the files specified. 
+# When committed they are stored with LF, on checkout they are 
+# converted to the OS's native line endings.  I like this as the
+# default setting!
+#
+# Example:
+# foo.js text 
+##################################################################
+* text
+
+# Always use linux/OSX format (text eol=lf)
+##################################################################
+# This setting tells git to normalize the files specified on commit, 
+# and always convert them to LF on checkout. You should use this for 
+# files that must retain LF endings, *even on Windows.*
+#
+# Example:
+# linuxtodo.txt text eol=lf
+##################################################################
+
+
+# Always use Windows format (text eol=crlf)
+##################################################################
+# This setting tells git to normalize the files specified on commit, 
+# and always convert them to CRLF on checkout. You should use this 
+# for files that must retain CRLF endings, *even on OSX or Linux*. 
+#
+# Example:
+# windowstodo.txt text eol=crlf
+##################################################################
+
+
+# Binary (binary)
+##################################################################
+# Denote all files that are truly binary and should not be modified.
+# This setting tells git that the files specified are not text at all, 
+# and it should not try to change them. 
+#
+# The binary setting is an alias for -text -diff.
+#
+# Example:
+# *.png binary
+##################################################################
+/public/ico/* binary
+/public/img/* binary
+/public/font/* binary

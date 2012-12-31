@@ -7,23 +7,23 @@ config.js
 node_modules
 
 # Don't worry about the bundled js files
-######################################
+##############################
 public/js/bootstrap.js
 
 # Don't track compiled css
-###########################
+##############################
 public/css/bootstrap.css
 public/css/responsive.css
 
 # Don's track OS generated files
-################################
+##############################
 .DS_Store*
 ehthumbs.db
 Icon?
 Thumbs.db
 
 # Don't track other stuff 
-#########################
+##############################
 lib-cov
 *.seed
 *.log
@@ -32,6 +32,7 @@ lib-cov
 *.out
 *.pid
 *.gz
+*~
 
 pids
 logs
