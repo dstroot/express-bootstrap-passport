@@ -1,15 +1,23 @@
 
-// Le javascript
-// ==================================================
-//- Placed at the end of the document so the pages load faster
-// Public CDN
+// Scripts 
+// ================================================= 
+//- HTML5 shim, for IE6-8 support of HTML5 elements 
+//- ------------------------------------------------
+// if lt IE 9
+  | <!-->
+  script(src='http://html5shim.googlecode.com/svn/trunk/html5.js')
+  | <!--
+//- Public CDN
+//- ------------------------------------------------
 script(type='text/javascript', src='http://platform.twitter.com/widgets.js')
 script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js')
-// Non Bootstrap
-script(type='text/javascript', src="/js/lib/holder/holder.js")
-script(type='text/javascript', src="/js/lib/google-code-prettify/prettify.js")
-// Bootstrap
-//- we bundle the individual scripts ourselves into bootstrap.js
+//- Non Bootstrap
+//- ------------------------------------------------
+//- script(type='text/javascript', src="/js/lib/holder/holder.js")
+//- script(type='text/javascript', src="/js/lib/google-code-prettify/prettify.js")
+//- Bootstrap
+//- ------------------------------------------------
+//- we bundle the individual scripts ourselves into bootstrap.js in the app
 script(type='text/javascript', src="/js/bootstrap.js")
 //- script(type='text/javascript', src="/js/lib/bootstrap.min.js")
 //- script(type='text/javascript', src="/js/application.js")

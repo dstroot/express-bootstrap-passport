@@ -253,6 +253,9 @@ only screen and (     -o-min-device-pixel-ratio: 2/1) {
 .subhead p {
   margin-bottom: 20px;
 }
+.subhead small {
+  font-size: 8px;
+}
 .subhead .navbar {
   display: none;
 }
