@@ -1,18 +1,19 @@
 {
   "name": "express-bootstrap-passport",
   "description": "integration of express, bootstrap and passport",
-  "version": "0.0.1",
+  "version": "0.0.1-1",
   "private": true,
   "analyze": false,
   "readme": "Nothing here!",
-  "subdomain": "",
+  "subdomain": "expbootport",
   "author": {
     "name": "Dan Stroot",
     "email": "dan@thestroots.com"
   },
   "keywords": [],
   "repository": {
-    "url": ""
+    "type": "git",
+    "url": "git@github.com:dstroot/express-bootstrap-passport.git"
   },
   "engines": {
     "node": "0.8.x"
@@ -26,7 +27,7 @@
     "connect-flash": "0.1.x",
     "passport": ">= 0.0.0",
     "passport-local": ">= 0.0.0",
-    "crypto":"*"
+    "crypto": "*"
   },
   "scripts": {
     "start": "node app.js"

@@ -5,7 +5,7 @@
 var fs              = require('fs')
   , path            = require('path')
   , config          = require('../config')
-  , utils 					= require('../utils')
+  , utils           = require('../utils')
   , flash           = require('connect-flash')
   //, util            = require('util')   // I don't know what this is
   , passport        = require('passport')
@@ -211,8 +211,8 @@ module.exports = function(app) {
   app.get('/welcome', welcome);
 	app.get('/robots*', robots);
 	app.get('/humans*', humans);
-	// 404 route (always last!)
-	//app.get('/*', fourofour);
+  // 404 route (always last!)
+  app.get('/*', fourofour);
   
   //POST Routes
   app.post('/register', register);
