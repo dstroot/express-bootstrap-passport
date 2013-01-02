@@ -201,10 +201,10 @@ passport.use(new LocalStrategy(function(username, password, done) {
       findByUsername(username, function(err, user) {
         if (err) { return done(err); }
         if (!user) { 
-          return done(null, false, { message: 'Unknown user ' + username }); 
+          return done(null, false, { message: '<strong>Oh Snap!</strong> We do not recognize your username ' + username + '.'}); 
         }
         if (user.password != utils.hash(password, user.username)) { 
-          return done(null, false, { message: 'Invalid password' }); 
+          return done(null, false, { message: '<strong>Oh Snap!</strong> Your password does not match.' }); 
         }
         return done(null, user);
       });
