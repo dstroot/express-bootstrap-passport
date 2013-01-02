@@ -342,7 +342,7 @@ var register = function(req, res) {
     if (!err) {
       // Found User!
       console.log('Found user' + result);
-      req.flash('error', 'Sorry, user exists!');
+      req.flash('error', '<strong>Oh Snap!</strong> We already have a user by that name.');
       res.redirect('/signup');
       //res.render('/signup', null, { message: 'User already exists!' });
     } else {
@@ -377,7 +377,7 @@ var register = function(req, res) {
           } else {
             // Found email!
             console.log('Found email' + doc);
-            req.flash('error', 'Sorry, email exists!');
+            req.flash('error', '<strong>Oh Snap!</strong> Sorry, We already have someone with that email address.');
             res.redirect('/signup');           
           }
         } else {

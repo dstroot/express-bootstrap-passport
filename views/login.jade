@@ -8,12 +8,6 @@ block content
     div.row
       div.span4.offset2
 
-        //- Flash Message
-        if message
-          br 
-          br 
-          p #{message}
-
         //- set focus for the user
         script $(document).ready(function () { $("#inputUserName").focus(); })
 
@@ -36,6 +30,11 @@ block content
             div.control-group
               div.controls
                 button.btn(type='submit') Sign In
+
+        //- Flash Message
+        if (message != '')
+          div.alert.alert-error
+            p !{message}
         br
         br
         p.small

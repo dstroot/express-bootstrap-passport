@@ -24,12 +24,6 @@ block content
     div.row
       div.span4.offset2
 
-        //- Flash Message
-        if message
-          br 
-          br 
-          p #{message}
-
         //- set focus for the user
         script $(document).ready(function () { $("#inputUserName").focus(); })
 
@@ -52,9 +46,11 @@ block content
               div.control-group
                 div.controls
                   button.btn(type='submit') Sign Up
+
+        //- Flash Message
+        if (message != '')
+          div.alert.alert-error
+            p !{message}
         
-        div#signup-error.hide alert.alert-error
         p Already have an account? 
           a(href="/login") Sign In
-      //Add additional script to validate the email address
-        script(type="text/javascript", src="../js/lib/jquery.mailcheck.min.js")
