@@ -51,14 +51,14 @@ db.exists(function (err, exists) {
         var designdoc = {
           "views": {
             "byUserName": {
-              "map": "function (doc) { if (doc.username) { emit(doc.username, doc) } } "
+                "map": "function (doc) { if (doc.username) { emit(doc.username, doc) } }"
             },
             "byUserEmail": {
-              "map": "function (doc) { if (doc.email) { emit(doc.email, doc) } } "
+                "map": "function (doc) { if (doc.email) { emit(doc.email, doc) } }"
             },
             "all": {
-              "map": "function (doc) { if (doc.name) emit(doc.name, doc); }"
-            }  
+                "map": "function (doc) { if (doc.name) { emit(doc.name, doc) } }"
+            }
           }
         };
 
@@ -136,13 +136,28 @@ function findByUsername(username, fn) {
 }
 
 /* ===================================================
+   Added to support signup - Needed for Passport 
+====================================================== */
+function findByEmail(email, fn) {
+  db.get(email, function(error, result) {
+    if (!error) {
+      return fn(null, result);
+    } else {
+      console.log('Error in findByEmail!', error);
+      return fn(null, null);
+    }
+  });
+}
+
+/* ===================================================
    Needed for Passport 
 ====================================================== */
 /*  Simple route middleware to ensure user is authenticated.
  *  Use this route middleware on any resource that needs to 
  *  be protected.  If the request is authenticated (typically 
  *  via a persistent login session), the request will proceed.
- *  Otherwise, the user will be redirected to the login page. */                 
+ *  Otherwise, the user will be redirected to the login page. 
+ */                 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   res.redirect('/login');
@@ -155,7 +170,8 @@ function ensureAuthenticated(req, res, next) {
  *   To support persistent login sessions, Passport needs to be able to
  *   serialize users into and deserialize users out of the session.  Typically,
  *   this will be as simple as storing the user ID when serializing, and finding
- *   the user by ID when deserializing.  */
+ *   the user by ID when deserializing.  
+ */
 passport.serializeUser(function(user, done) {
   done(null, user.id); 
 });
@@ -170,12 +186,11 @@ passport.deserializeUser(function(id, done) {
    Needed for Passport 
 ====================================================== */
 // Use the LocalStrategy within Passport.
-//   Strategies in passport require a `verify` function, which accept
-//   credentials (in this case, a username and password), and invoke a callback
-//   with a user object.  In the real world, this would query a database;
-//   however, in this example we are using a baked-in set of users.
-passport.use(new LocalStrategy(
-  function(username, password, done) {
+// Strategies in passport require a `verify` function, 
+// which accept credentials (in this case, a username and 
+// password), and invoke a callback with a user object.  
+passport.use(new LocalStrategy(function(username, password, done) {
+    
     // asynchronous verification, for effect...
     process.nextTick(function () {
       
@@ -202,21 +217,22 @@ passport.use(new LocalStrategy(
 =============================================================== */
 module.exports = function(app) {
 
-  // GET Routes
+  // --- GET Routes
   app.get('/', index);
   app.get('/account', ensureAuthenticated, account);
   app.get('/signup', signup);
   app.get('/login', login);
   app.get('/logout', logout);
   app.get('/welcome', welcome);
-	app.get('/robots*', robots);
-	app.get('/humans*', humans);
-  // 404 route (always last!)
-  app.get('/*', fourofour);
   
-  //POST Routes
+  // -- POST Routes
   app.post('/register', register);
   app.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), postlogin);
+
+  // --- Error Routes (always last!)
+  app.get('/404', fourofour);
+  app.get('/403', fourothree);
+  app.get('/500', fivehundred);
 
 };
 
@@ -253,13 +269,18 @@ var signup = function(req, res){
 //GET /account
 //////////////////////////////////////////////////////////////
 var account = function(req, res){
-  res.render('account', { user: req.user });
+  res.render('account', { 
+    user: req.user 
+  });
 };
 
 //GET /login
 //////////////////////////////////////////////////////////////
 var login =function(req, res){
-  res.render('login', { user: req.user, message: req.flash('error') });
+  res.render('login', { 
+    user: req.user, 
+    message: req.flash('error') 
+  });
 };
 
 //GET /logout
@@ -269,45 +290,34 @@ var logout = function(req, res){
   res.redirect('/');
 };
 
-//GET /robots
+///GET /404
 ///////////////////////////////
-var robots = function(req, res) {   
-  fs.readFile(path.join(path.join(__dirname, '..'), '/public/robots.txt'), 'utf8', function(error, content) {
-      if (error) console.log(error);
-      res.writeHead(200, { 'Content-Type': 'text/plain; charset=UTF-8' });
-      res.end(content, 'utf-8');
-  });
-};
+var fourofour = function(req, res, next){
+  // trigger a 404 since no other middleware
+  // will match /404 after this one, and we're not
+  // responding here
+  next();
+}
 
-//GET /humans
+///GET /403
 ///////////////////////////////
-var humans = function(req, res) {   
-  fs.readFile(path.join(path.join(__dirname, '..'), '/public/humans.txt'), 'utf8', function(error, content) {
-      if (error) console.log(error);
-      res.writeHead(200, { 'Content-Type': 'text/plain; charset=UTF-8' });
-      res.end(content, 'utf-8');
-  });
-};
+var fourothree = function(req, res, next){
+  // trigger a 403 error
+  var err = new Error('not allowed!');
+  err.status = 403;
+  next(err);
+}
 
-///GET (something we don't a route for)
+///GET /500
 ///////////////////////////////
-var fourofour = function(req, res, next) {
-  
-    //Don't process requests for assets
-    if (req.url.indexOf('/css') == 0 ) return next();
-    if (req.url.indexOf('/img') == 0 ) return next();
-    if (req.url.indexOf('/ico') == 0 ) return next();
-    if (req.url.indexOf('/js') == 0 ) return next();
-    if (req.url.indexOf('humans*.*') == 0 ) return next();
-    if (req.url.indexOf('robots*.*') == 0 ) return next();
-    
-    res.render('404', { url: req.url });
-};
+var fivehundred = function(req, res, next){
+  // trigger a generic (500) error
+  next(new Error('keyboard cat!'));
+}
 
 //POST /signup
 ///////////////////////////////////////////////////////////////
 var register = function(req, res) {
-
 /* ==============================================================
     This needs work.  We need to be sure we are not saving 
     duplicate users and user email addresses.  In theory we
@@ -327,27 +337,55 @@ var register = function(req, res) {
     updated_at: new Date()
   };
 
-  db.save(userdoc.username, 
-    userdoc, 
-    function(error, result) {
-      if(!error) {
-        console.log('Saved new user: success!' + result);
-        // calling req.login below will make passportjs setup 
-        // the user object, serialize the user, etc.
-        // This has to be placed here *after* the database save 
-        // because the result gives us an object with an .id 
-        req.login(result, {}, function(err) {
-          if (err) { 
-            console.log('Passport login did not work!', err); 
+  // --- Check if the user exists
+  db.get(userdoc.username, function (err, result) {
+    if (!err) {
+      // Found User!
+      console.log('Found user' + result);
+      req.flash('error', 'Sorry, user exists!');
+      res.redirect('/signup');
+      //res.render('/signup', null, { message: 'User already exists!' });
+    } else {
+      // didn't find user
+      console.log('did not find user' + err);
+      // User does not yet exist
+      // now check if the email exists
+      db.view('user/byUserEmail', { key: userdoc.email }, function (errs, doc) {
+        if (!errs) {
+          // check the return value
+          if (0 === doc.length) {
+            // didn't return anything
+            console.log('did not find email' + doc);
+            db.save(userdoc.username, userdoc, function(err, result) {
+              if(!err) {
+                console.log('Saved new user: success! ' + result);
+                // calling req.login below will make passportjs setup 
+                // the user object, serialize the user, etc.
+                // This has to be placed here *after* the database save 
+                // because the result gives us an object with an .id 
+                req.login(result, {}, function(err) {
+                  if (err) { 
+                    console.log('Passport login did not work!', err); 
+                  } else {
+                    res.redirect("/welcome");
+                  }
+                });
+              } else {
+                result.send(error.status_code);
+              }
+            });
           } else {
-            res.redirect("/welcome");
+            // Found email!
+            console.log('Found email' + doc);
+            req.flash('error', 'Sorry, email exists!');
+            res.redirect('/signup');           
           }
-        });
-      } else {
-        result.send(error.status_code)
-      }
+        } else {
+          console.log('Error: ' + err);
+        }
+      });
     }
-  );
+  });
 }
 
 // POST /login

@@ -23,12 +23,17 @@ block content
 
     div.row
       div.span4.offset2
+
+        //- Flash Message
         if message
+          br 
+          br 
           p #{message}
 
         //- set focus for the user
         script $(document).ready(function () { $("#inputUserName").focus(); })
 
+        //- Signup Form
         form.form-horizontal(action='/register', method='post')
           fieldset
             Legend Sign up!

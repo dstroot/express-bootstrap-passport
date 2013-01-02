@@ -7,12 +7,17 @@ block content
   div.container
     div.row
       div.span4.offset2
+
+        //- Flash Message
         if message
+          br 
+          br 
           p #{message}
 
         //- set focus for the user
         script $(document).ready(function () { $("#inputUserName").focus(); })
 
+        //- Login form
         form.form-horizontal(action='/login', method='post')
           fieldset
             legend Sign in!
