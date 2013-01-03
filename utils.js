@@ -1,45 +1,30 @@
-'use strict'
-/* ==============================================================
- *  Include required packages / Module Dependencies
- * ============================================================== */
-var crypto          = require('crypto')
-   ,UglifyJS        = require("uglify-js")        // https://npmjs.org/package/uglify-js
-   ,fs              = require('fs');
+'use strict'                                    // for jshint
+/* ==========================================================
+ * utils.js v0.0.1
+ * Author: Daniel J. Stroot
+ * ========================================================== */
 
-/**
- * Returns a hashed password
+/* ==========================================================
+ * Include required packages / Module Dependencies
+ * ========================================================== */
+
+var fs              = require('fs')          // http://nodejs.org/docs/v0.3.1/api/fs.html
+   ,UglifyJS        = require("uglify-js");  // https://npmjs.org/package/uglify-js
+
+/* =========================================================
+ * BUNDLE: Concatentate and minify all the .js libraries
  *
  * Examples:
- *
- *   utils.hash('password', 'salt')
- *
- * @param  {string} pass
- * @param  {string} salt
- * @return {string}
- * @api private
- */
-exports.hash = function (pass, salt) {
-  var h = crypto.createHash('sha512');
-  h.update(pass);
-  h.update(salt);
-  return h.digest('base64');
-};
-
-
-/**
- * Concatentate and minify all the .js libraries
- *
- * Examples:
- *
  *   utils.bundle()
- */
+ * ========================================================== */
+
 exports.bundle = function () {
   
-  // --- Check if the file already exists
+  // Check if the file already exists
   fs.readFile(__dirname + '/public/js/bootstrap.js', 'utf8', function (err, data) {
     if (err) {
       
-      // --- File doesn't exist.  Create it.
+      // File doesn't exist.  Create it.
       var scripts = [
           'public/js/lib/bootstrap-transition.js'
         , 'public/js/lib/bootstrap-alert.js'
@@ -56,10 +41,10 @@ exports.bundle = function () {
         , 'public/js/lib/bootstrap-affix.js'
       ];
       
-      // 1: Minify all the files
+      // 1: Concatenate and "minify" all the files
       var minified = UglifyJS.minify(scripts);
 
-      // 2: Write out the bundled, minified script
+      // 2: Write out the result
       fs.writeFile(__dirname + '/public/js/bootstrap.js', minified.code, 'utf8', function (err) {
         if (err) {
           return console.log(err);
@@ -68,9 +53,6 @@ exports.bundle = function () {
       });
 
     }
-
-  //console.log('bootstrap.js already exists.');
-  
+  console.log('bootstrap.js already exists.');
   });
-
 }

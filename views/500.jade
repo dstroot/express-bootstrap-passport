@@ -8,7 +8,7 @@ html(lang='en')
 
     // styles 
     // ========================================= 
-    link(rel='stylesheet', href='/css/bootstrap.css')
+    link(rel='stylesheet', href='/css/bootstrap.min.css')
     link(rel='stylesheet', href='/css/docs.css')
 
     // icons 
@@ -17,10 +17,11 @@ html(lang='en')
     link(rel='apple-touch-icon-precomposed', sizes='114x114', href='/ico/apple-touch-icon-114-precomposed.png')
     link(rel='apple-touch-icon-precomposed', sizes='72x72', href='/ico/apple-touch-icon-72-precomposed.png')
     link(rel='apple-touch-icon-precomposed', href='../ico/apple-touch-icon-57-precomposed.png')
-    link(rel='shortcut icon', href='/ico/favicon.ico')
+    link(rel='shortcut icon', href='/ico/favicon.png')
   Body
     header.jumbotron.subhead
       div.container
-        h1 500 Internal Server Error! :(
-        p Something went wrong when we tried to go here: #{url}
-        p Here's the message: #{err.message}
+        h1 500 Internal Server Error!  :(
+        p Here's the message: #{error.message}
+        br 
+        pre= error.stack

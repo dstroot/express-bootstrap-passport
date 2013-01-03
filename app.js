@@ -1,11 +1,17 @@
 
-'use strict'
-/* ==============================================================
-    Include required packages / Module Dependencies
-=============================================================== */
+'use strict'                                    // for jshint
+/* ==========================================================
+ * utils.js v0.0.1
+ * Author: Daniel J. Stroot
+ * ========================================================== */
+
+/* ==========================================================
+ * Include required packages / Module Dependencies
+ * ========================================================== */
+
 var express         = require('express')
-  , http            = require('http')
-  , path            = require('path')
+  , http            = require('http')             // http://nodejs.org/docs/v0.3.1/api/http.html
+  , path            = require('path')             // http://nodejs.org/docs/v0.3.1/api/path.html
   , config          = require('./config')
   , utils           = require('./utils')
   , gzippo          = require('gzippo')           // https://npmjs.org/package/gzippo
@@ -21,8 +27,9 @@ var app = express();
 // Controls logging
 var showconsole = true;   
 
-//used for session and password hashes
+// Used for session hashes
 var salt = '47sdkfjk23';
+
 var hour = 3600000;
 var day = (hour * 24);
 var month = (day * 30);
@@ -40,6 +47,7 @@ app.configure(function(){
     res.locals.title        = config.title;
     res.locals.description  = config.description;
     res.locals.author       = config.author;
+    res.locals.keywords     = config.keywords;
     res.locals.version      = config.version;
     next();
   });
@@ -47,7 +55,7 @@ app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.use(express.favicon());
+  app.use(express.favicon(__dirname + '/public/ico/favicon.ico'));
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
@@ -84,11 +92,11 @@ app.configure(function(){
    , debug: true
   }));
   
-  // --- Replace the static provider with gzippo's to serve up gzip'ed files
+  // Replace the static provider with gzippo's to serve up gzip'ed files
   app.use(gzippo.staticGzip(path.join(__dirname + '/public', { maxAge: day })));
   //app.use(express.static(path.join(__dirname, '/public')));
 
-  // --- Routing and error handling
+  // Routing and error handling
  
   // "app.router" positions our routes 
   // above the middleware defined below,
@@ -101,7 +109,8 @@ app.configure(function(){
 
   // Since this is the last non-error-handling
   // middleware use()d, we assume 404, as nothing else
-  // responded.  Test it out:
+  // responded.
+
   // $ curl http://localhost:3000/notfound
   // $ curl http://localhost:3000/notfound -H "Accept: application/json"
   // $ curl http://localhost:3000/notfound -H "Accept: text/plain"
@@ -123,9 +132,10 @@ app.configure(function(){
 
     // default to plain-text. send()
     res.type('txt').send('Not found');
+    
   });
 
-  // error-handling middleware, takes the same form
+  // error-handling middleware, take the same form
   // as regular middleware, however they require an
   // arity of 4, aka the signature (err, req, res, next).
   // when connect has an error, it will invoke ONLY error-handling
@@ -142,13 +152,9 @@ app.configure(function(){
     // here and next(err) appropriately, or if
     // we possibly recovered from the error, simply next().
     res.status(err.status || 500);
-    //res.render('500', { error: err });
-    console.error(err.stack);
-    res.render('500', { 
-      err: err,
-      url: req.url
-    });
+    res.render('500', { error: err });
   });
+
 }); 
 
 /* ==============================================================
@@ -185,10 +191,10 @@ app.configure('production', function(){
 /* ==============================================================
     Launch the server
 =============================================================== */
-// --- Minify and bundle .js
+// Minify and bundle .js
 utils.bundle();
 
-// --- Launch Server
+// Launch Server
 var server = http.createServer(app).listen(app.get('port'), function(){
   if (showconsole) console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
 });

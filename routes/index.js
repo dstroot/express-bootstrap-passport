@@ -2,15 +2,16 @@
 /* ==============================================================
     Include required packages / Module Dependencies
 =============================================================== */
-var fs              = require('fs')
-  , path            = require('path')
+var fs              = require('fs')              // http://nodejs.org/docs/v0.3.1/api/fs.html
+  , path            = require('path')            // http://nodejs.org/docs/v0.3.1/api/path.html
   , config          = require('../config')
   , utils           = require('../utils')
-  , flash           = require('connect-flash')
-  //, util            = require('util')   // I don't know what this is
-  , passport        = require('passport')
+  , flash           = require('connect-flash')   // https://npmjs.org/package/connect-flash 
+  //, util            = require('util')          // http://nodejs.org/docs/v0.3.1/api/util.html
+  , passport        = require('passport')        // https://npmjs.org/package/passport
   , LocalStrategy   = require('passport-local').Strategy
-  , cradle          = require('cradle');
+  , pass            = require('pwd')             // https://github.com/visionmedia/node-pwd
+  , cradle          = require('cradle');         ///https://npmjs.org/package/cradle
 
 /* ===================================================
    Cradle connection to Cloudant
@@ -38,73 +39,85 @@ db.exists(function (err, exists) {
   } else if (exists) {
       console.log('Database exists, OK');
   } else {
-      console.log('Database does not exist, creating it...');
-      db.create(function (error) {
-        if (error) {
-            console.log('Could not create database: ', error);
-        } else {
-            console.log('Done! Created Database');
+    console.log('Database does not exist, creating it...');
+    db.create(function (error) {
+      if (error) {
+          console.log('Could not create database: ', error);
+      } else {
+          console.log('Done! Created Database');
+      }
+      // ===================================================
+      //   Define & add the design views
+      //====================================================  
+      var designdoc = {
+        "views": {
+          "byUserName": {
+              "map": "function (doc) { if (doc.username) { emit(doc.username, doc) } }"
+          },
+          "byUserEmail": {
+              "map": "function (doc) { if (doc.email) { emit(doc.email, doc) } }"
+          },
+          "all": {
+              "map": "function (doc) { if (doc.name) { emit(doc.name, doc) } }"
+          }
         }
-        // ===================================================
-        //   Define & add the design views
-        //====================================================  
-        var designdoc = {
-          "views": {
-            "byUserName": {
-                "map": "function (doc) { if (doc.username) { emit(doc.username, doc) } }"
-            },
-            "byUserEmail": {
-                "map": "function (doc) { if (doc.email) { emit(doc.email, doc) } }"
-            },
-            "all": {
-                "map": "function (doc) { if (doc.name) { emit(doc.name, doc) } }"
-            }
-          }
-        };
+      };
 
-        db.save('_design/user', designdoc, function (err2, res) {
-          if (err2) {
-              // Handle error
-              console.log('Cannot add Design Doc!', err2);
-          } else {
-              // Handle success
-              console.log('Added Design Doc', res);
-          }
-        });
-
-        //===================================================
-        //   Save a test User
-        //===================================================
-        var testuser = {
-            jsonType: 'user',
-            username: 'Dan',
-            password: utils.hash('passw0rd', 'Dan'),
-            email: 'dan@awesomedomain.com',
-            created_at: new Date(),
-            updated_at: new Date()
-        };
-
-        // See if test user exists
-        db.get(testuser.username, function (err, doc) {
-          if (err) {
+      db.save('_design/user', designdoc, function (err2, res) {
+        if (err2) {
             // Handle error
-            console.log('Test User does not exist\n');
-            // Add the User
-            db.save(testuser.username,   // Document Name
-              testuser,                  // Document Contents (user above)
-              function(error, result) {
-                if(!error) {
-                  console.log("Added Test User", result);
-                } else {
-                  console.log("Error: ", error);
-                }
-            });
-          } else {
+            console.log('Cannot add Design Doc!', err2);
+        } else {
             // Handle success
-            console.log('USER: ' + doc + '\n');
-          }
-        });
+            console.log('Added Design Doc', res);
+        }
       });
+
+      //===================================================
+      //   Save a test User
+      //===================================================
+      var testuser = {
+        jsonType: 'user',
+        username: 'Dan',
+        hash: '',
+        salt: '',
+        email: 'dan@somedomain.com',
+        created_at: new Date(),
+        updated_at: new Date()
+      };
+
+      // See if test user exists
+      db.get(testuser.username, function (err, doc) {
+        if (err) {
+          // Handle error
+          console.log('Test User does not exist!\n');
+          
+          // Add the User (password is hardcoded as "passw0rd")
+          pass.hash('passw0rd', function(err, salt, hash){
+            
+            if (err) throw err;
+            
+            // store the salt & hash in the DB
+            testuser.hash = hash;
+            testuser.salt = salt;
+
+            db.save(testuser.username,   // Document Name
+            testuser,                    // Document Contents (user above)
+            function(error, result) {
+              if(!error) {
+                console.log("Added Test User" + result + '\n');
+              } else {
+                console.log("Error: " + error + '\n');
+              }
+            });
+
+          })
+        } else {
+          // Handle success
+          console.log('USER: ' + doc + '\n');
+        }
+      });
+    });
   }
 });
 
@@ -125,6 +138,18 @@ function findById(id, fn) {
    Needed for Passport 
 ====================================================== */
 function findByUsername(username, fn) {
+  //db.view('user/byUserName', { key: username }, function (error, result) {
+      //  if (!error) {
+    // check the return value
+    //if (0 === doc.length) {
+      // didn't return anything
+      //return fn(null, null);
+    //} else {
+      // found user!
+      //return fn(null, result);
+    //} else {
+      //return fn(null, null);
+    //}
   db.get(username, function(error, result) {
     if (!error) {
       return fn(null, result);
@@ -139,6 +164,18 @@ function findByUsername(username, fn) {
    Added to support signup - Needed for Passport 
 ====================================================== */
 function findByEmail(email, fn) {
+  //db.view('user/byUserEmail', { key: email }, function (error, result) {
+  //  if (!error) {
+    // check the return value
+    //if (0 === doc.length) {
+      // didn't return anything
+      //return fn(null, null);
+    //} else {
+      // found user!
+      //return fn(null, result);
+    //} else {
+      //return fn(null, null);
+    //}
   db.get(email, function(error, result) {
     if (!error) {
       return fn(null, result);
@@ -199,14 +236,31 @@ passport.use(new LocalStrategy(function(username, password, done) {
       // indicate failure and set a flash message.  Otherwise, return the
       // authenticated `user`.
       findByUsername(username, function(err, user) {
+        
         if (err) { return done(err); }
+        
         if (!user) { 
+          
+          // If no user found
           return done(null, false, { message: '<strong>Oh Snap!</strong> We do not recognize your username ' + username + '.'}); 
+        
+        } else {
+          
+          // else check password
+          pass.hash(password, user.salt, function(err, hash){
+            
+            if (err) { return done(err); }
+            
+            if (user.hash == hash) {
+              // matches
+              return done(null, user);
+            } else {
+              // doesn't match
+              return done(null, false, { message: '<strong>Oh Snap!</strong> Your password does not match.' }); 
+            }
+
+          });
         }
-        if (user.password != utils.hash(password, user.username)) { 
-          return done(null, false, { message: '<strong>Oh Snap!</strong> Your password does not match.' }); 
-        }
-        return done(null, user);
       });
     });
   }
@@ -303,8 +357,27 @@ var fourofour = function(req, res, next){
 ///////////////////////////////
 var fourothree = function(req, res, next){
   // trigger a 403 error
-  var err = new Error('not allowed!');
+  var err = new Error('Not Allowed!');
   err.status = 403;
+
+  // respond with html page
+  if (req.accepts('html')) {
+    res.render('403', { 
+      err: err,
+      //url: req.url 
+    });
+    return;
+  }
+
+  // respond with json
+  if (req.accepts('json')) {
+    res.send({ error: 'Not Allowed!' });
+    return;
+  }
+
+  // default to plain-text. send()
+  res.type('txt').send('Not Allowed!');
+
   next(err);
 }
 
@@ -312,76 +385,83 @@ var fourothree = function(req, res, next){
 ///////////////////////////////
 var fivehundred = function(req, res, next){
   // trigger a generic (500) error
-  next(new Error('keyboard cat!'));
+  next(new Error('Testing 1,2,3!'));
 }
 
 //POST /signup
 ///////////////////////////////////////////////////////////////
 var register = function(req, res) {
-/* ==============================================================
-    This needs work.  We need to be sure we are not saving 
-    duplicate users and user email addresses.  In theory we
-    want a single user name/email combination.  We need a way
-    to pass back the error to the user also if they are
-    trying to create a duplicate account.  
 
-    The form values are passed in via req.body
-=============================================================== */
-
-  var userdoc = {
-    jsonType: 'user',
-    username: req.body.username,
-    password: utils.hash(req.body.password, req.body.username),
-    email: req.body.email,
-    created_at: new Date(),
-    updated_at: new Date()
-  };
-
-  // --- Check if the user exists
-  db.get(userdoc.username, function (err, result) {
+  // Check if the user exists
+  db.get(req.body.username, function (err, result) {
     if (!err) {
+      
       // Found User!
-      console.log('Found user' + result);
+      console.log('Found user:' + result);
       req.flash('error', '<strong>Oh Snap!</strong> We already have a user by that name.');
       res.redirect('/signup');
-      //res.render('/signup', null, { message: 'User already exists!' });
+
     } else {
+      
       // didn't find user
-      console.log('did not find user' + err);
+      console.log('Did not find user' + err);
       // User does not yet exist
       // now check if the email exists
-      db.view('user/byUserEmail', { key: userdoc.email }, function (errs, doc) {
+      db.view('user/byUserEmail', { key: req.body.email }, function (errs, doc) {
         if (!errs) {
           // check the return value
           if (0 === doc.length) {
             // didn't return anything
             console.log('did not find email' + doc);
-            db.save(userdoc.username, userdoc, function(err, result) {
-              if(!err) {
-                console.log('Saved new user: success! ' + result);
-                // calling req.login below will make passportjs setup 
-                // the user object, serialize the user, etc.
-                // This has to be placed here *after* the database save 
-                // because the result gives us an object with an .id 
-                req.login(result, {}, function(err) {
-                  if (err) { 
-                    console.log('Passport login did not work!', err); 
-                  } else {
-                    res.redirect("/welcome");
-                  }
-                });
-              } else {
-                result.send(error.status_code);
-              }
+
+
+            // Add the User (password is hardcoded as "passw0rd")
+            pass.hash(req.body.password, function (err, salt, hash) {
+              
+              if (err) throw err;
+              
+              // store the salt & hash in the DB
+              var userdoc = {
+                jsonType: 'user',
+                username: req.body.username,
+                hash: hash,
+                salt: salt,
+                email: req.body.email,
+                created_at: new Date(),
+                updated_at: new Date()
+              };
+
+              db.save(userdoc.username, userdoc, function (err, result) {
+                if(!err) {
+                  console.log('Saved new user: success! ' + result);
+                  // calling req.login below will make passportjs setup 
+                  // the user object, serialize the user, etc.
+                  // This has to be placed here *after* the database save 
+                  // because the result gives us an object with an .id 
+                  req.login(result, {}, function(err) {
+                    if (err) { 
+                      console.log('Passport login did not work!', err); 
+                    } else {
+                      res.redirect("/welcome");
+                    }
+                  });
+                } else {
+                  result.send(error.status_code);
+                }
+              });
             });
           } else {
+            
             // Found email!
             console.log('Found email' + doc);
             req.flash('error', '<strong>Oh Snap!</strong> Sorry, We already have someone with that email address.');
             res.redirect('/signup');           
+          
           }
         } else {
+
           console.log('Error: ' + err);
+        
         }
       });
     }
