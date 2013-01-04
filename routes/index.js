@@ -124,6 +124,8 @@ db.exists(function (err, exists) {
 /* ===================================================
    Needed for Passport 
 ====================================================== */
+// Doesn't need to query via a view, can just get doc
+// by id directly
 function findById(id, fn) {
   db.get(id, function(error, result) {
     if (!error) {
@@ -135,21 +137,52 @@ function findById(id, fn) {
 }
 
 /* ===================================================
-   Needed for Passport 
+   Needed for Passport //TODO query by view
 ====================================================== */
 function findByUsername(username, fn) {
-  //db.view('user/byUserName', { key: username }, function (error, result) {
-      //  if (!error) {
-    // check the return value
-    //if (0 === doc.length) {
-      // didn't return anything
-      //return fn(null, null);
-    //} else {
-      // found user!
-      //return fn(null, result);
-    //} else {
-      //return fn(null, null);
-    //}
+  
+  /*
+  db.view('user/byUserName', { key: username }, function (error, result) {
+    if (!error) {
+      // check the return value
+      if (0 === result.length) {
+        // didn't return anything
+        return fn(null, null);
+      } else {
+        // found user!
+        console.log('Found user:' + result);
+
+        // You have to parse the JSON!!!  This is what it looks like:
+        
+        [
+          {
+            "id":"Dan",
+            "key":"Dan",
+            "value":{
+              "_id":"Dan",
+              "_rev":"1-c81f0f740e80702de031a13b50ec6f21",
+              "jsonType":"user",
+              "username":"Dan",
+              "hash":"ù7I\u001e?ß(^E¢jär?ë\u000f?.*¡N§bVt±·'??E\u001dWw\u001aÉ\u0010\u001f >L\tAâkºr\u0018/\u0016ôx2X¡,°ÿ\u001f-óIOçúUb ??pF\u000fqzS\u0012Fû09?íEV?I\u0015é\u0000\u0015â'F(\u001eì\u0012?k'zT?1UÆ0{?°\u0011?b?¿?\u001e\u001aßJ°Oz?2?ª",
+              "salt":"e/0YT1+tXJe9fX3yB8AfQgFf+imyI/P2upXfjUOZcshGhiKsZMBPnleSXVPOyWac0lSRmLVpGS8FfMfvr4zDp2mguNgcSV3l/POrHU4mcy73V1xD1NFfXIwMW5LLXP0hVBTX549Nkm3lBjPECCtyBKdA5TYplTbskO9TYwZAKJk=",
+              "email":"dan@somedomain.com",
+              "created_at":"2013-01-03T06:02:44.800Z",
+              "updated_at":"2013-01-03T06:02:44.800Z"
+            }
+          }
+        ]
+        
+        //here's where you return the "value" from above: 
+        return fn(null, result[0]);
+      }
+    } else {
+      // Error
+      return fn(null, null);
+    }
+  });
+  */
+
+  
   db.get(username, function(error, result) {
     if (!error) {
       return fn(null, result);
@@ -158,24 +191,31 @@ function findByUsername(username, fn) {
       return fn(null, null);
     }
   });
+  
+
 }
 
 /* ===================================================
-   Added to support signup - Needed for Passport 
+   Added to support signup - TODO Needed for Passport ?  Use in the signup?
 ====================================================== */
 function findByEmail(email, fn) {
-  //db.view('user/byUserEmail', { key: email }, function (error, result) {
-  //  if (!error) {
-    // check the return value
-    //if (0 === doc.length) {
-      // didn't return anything
-      //return fn(null, null);
-    //} else {
-      // found user!
-      //return fn(null, result);
-    //} else {
-      //return fn(null, null);
-    //}
+  db.view('user/byUserEmail', { key: email }, function (error, result) {
+    if (!error) {
+      // check the return value
+      if (0 === result.length) {
+        // didn't return anything
+        return fn(null, null);
+      } else {
+        // found user!
+        return fn(null, result);
+      }
+    } else {
+      // Error
+      return fn(null, null);
+    }
+  });
+
+  /*
   db.get(email, function(error, result) {
     if (!error) {
       return fn(null, result);
@@ -184,6 +224,8 @@ function findByEmail(email, fn) {
       return fn(null, null);
     }
   });
+  */
+
 }
 
 /* ===================================================
