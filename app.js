@@ -49,13 +49,14 @@ app.configure(function(){
     res.locals.author       = config.author;
     res.locals.keywords     = config.keywords;
     res.locals.version      = config.version;
+    res.locals.google       = config.google.analytics;
     next();
   });
 
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.use(express.favicon(__dirname + 'favicon.ico'));
+  app.use(express.favicon(__dirname + '/public/favicon.ico'));
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());

@@ -23,9 +23,15 @@ block content
 
     div.row
       div.span5.offset2
+        
+        //- set focus for the user headjs version
+        script 
+          head.ready(function() {
+             $("#inputUserName").focus();
+          });
 
-        //- set focus for the user
-        script $(document).ready(function () { $("#inputUserName").focus(); })
+        //- set focus for the user regular version
+          script $(document).ready(function () { $("#inputUserName").focus(); })
 
         //- Signup Form
         br 

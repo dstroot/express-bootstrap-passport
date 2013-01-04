@@ -1,61 +1,96 @@
 head
 
+  // Meta
+  // ==================================================== 
   meta(charset='utf-8')
+  meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+  
   title= title
+  
   meta(name='viewport', content='width=device-width, initial-scale=1.0')
   meta(name='description', content='#{description}')
   meta(name='author', content='#{author}')
   meta(name='keywords', content='#{keywords}')
 
+  //- Let's use headjs as our loader and also eliminate HTML5 Shim http://headjs.com/
+  script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/headjs/0.99/head.min.js')
+
   // styles 
-  // ================================================= 
-  link(rel='stylesheet', href='/css/bootstrap.min.css')
-  link(rel='stylesheet', href='/css/responsive.min.css')
-  link(rel='stylesheet', href='/css/docs.css')
-
-  include scripts
-
-  //script(//cdnjs.cloudflare.com/ajax/libs/headjs/0.99/head.min.js)
-
-  //load css via head.js
+  // ==================================================== 
+  //-
+    link(rel='stylesheet', href='/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/css/responsive.min.css')
+    link(rel='stylesheet', href='/css/docs.css')
+  //- possible to load css via head.js but then less-middleware will not work
   script
     head.load(
-    
     '/css/bootstrap.min.css', 
     '/css/responsive.min.css', 
     '/css/docs.css'
-
     );
+  //- include scripts
 
-
-
-  // dependecies (execute in order listed
+  // scripts
+  // ==================================================== 
+  //- dependencies (execute in order listed)
   script
     head.js(
-
-    "//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js",  
-    "/js/bootstrap.js"
-
+    '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js',  
+    '/js/bootstrap.js',
+    'http://platform.twitter.com/widgets.js'
     );
-  // no dependencies 
-  script
-    head.js("http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js")
-        .js("http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js")
-        .js("http://ajax.googleapis.com/ajax/libs/prototype/1.7.1.0/prototype.js")
-        .js("http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js")
-        .js("http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js");
+  //- no dependencies 
+    script head.js('http://platform.twitter.com/widgets.js')
 
   //- include fonts
 
-  // icons 
-  // ================================================= 
+  //- icons 
+  //- ================================================= 
+  //- Just place favicon.ico and apple-touch-icon.png in the root directory 
+  //- Not needed to declare here anymore - all this below not needed:
   //- http://mathiasbynens.be/notes/touch-icons, note IE needs .ico but should be handled by expressjs
-  link(rel='shortcut icon', href='/ico/favicon.png')
-  //- For third-generation iPad with high-resolution Retina display:
-  link(rel='apple-touch-icon-precomposed', sizes='144x144', href='/ico/apple-touch-icon-144-precomposed.png')
-  //- For iPhone with high-resolution Retina display:
-  link(rel='apple-touch-icon-precomposed', sizes='114x114', href='/ico/apple-touch-icon-114-precomposed.png')
-  //- For first- and second-generation iPad:
-  link(rel='apple-touch-icon-precomposed', sizes='72x72', href='/ico/apple-touch-icon-72-precomposed.png')
-  //- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices:
-  link(rel='apple-touch-icon-precomposed', href='/ico/apple-touch-icon-57-precomposed.png')
+    link(rel='shortcut icon', href='/ico/favicon.png')
+    //- For third-generation iPad with high-resolution Retina display:
+    link(rel='apple-touch-icon-precomposed', sizes='144x144', href='/ico/apple-touch-icon-144-precomposed.png')
+    //- For iPhone with high-resolution Retina display:
+    link(rel='apple-touch-icon-precomposed', sizes='114x114', href='/ico/apple-touch-icon-114-precomposed.png')
+    //- For first- and second-generation iPad:
+    link(rel='apple-touch-icon-precomposed', sizes='72x72', href='/ico/apple-touch-icon-72-precomposed.png')
+    //- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices:
+    link(rel='apple-touch-icon-precomposed', href='/ico/apple-touch-icon-57-precomposed.png')
+
+
+  // Google Tracking
+  // ==================================================== 
+
+  //- Use the Google Tracking Snippet to Track Your Website
+  //- https://developers.google.com/analytics/devguides/collection/gajs/asyncTracking
+
+  //- The Analytics snippet is a small piece of JavaScript code that you 
+  //- paste into your pages. It activates Google Analytics tracking by 
+  //- inserting ga.js into the page. To use this on your pages, copy the 
+  //- code snippet below, replacing UA-XXXXX-X with your web property ID. 
+  //- Paste this snippet into your website template page so that it appears 
+  //- before the closing </head> tag.
+
+  //- If you need to do more than basic page tracking, see the tracking reference 
+  //- for a list of methods available in the API and see the Usage Guide for details 
+  //- on using the asynchronous syntax. For step-by-step instructions on setting up 
+  //- tracking, see the Help Center article on setting up tracking. 
+
+  script(type='text/javascript')  
+    
+    var _gaq = _gaq || [];  
+    _gaq.push(['_setAccount', '#{google}']);  
+    _gaq.push(['_trackPageview']);  
+
+    (function() {
+      var ga = document.createElement('script'); 
+      ga.type = 'text/javascript'; ga.async = true;    
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';    
+
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);  
+    })();
+  //- The snippet above represents the minimum configuration needed to track a page 
+  //- asynchronously. It uses _setAccount to set the page's web property ID and then 
+  //- calls _trackPageview to send the tracking data back to the Google Analytics servers.

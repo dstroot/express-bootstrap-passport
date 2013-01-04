@@ -140,8 +140,25 @@ function findById(id, fn) {
    Needed for Passport //TODO query by view
 ====================================================== */
 function findByUsername(username, fn) {
-  
+
   /*
+  db.view('user/byUserName', {key: username}, function (error, result) { 
+    if (error) {
+      //fn(new Error('User ' + username + ' does not exist'));
+    }
+    else {
+        if (result.length != 1) {
+          //fn(new Error('User ' + username + ' does not exist'));
+        }
+        else {
+          var user = result[0].value);
+          console.log('Found user: ' + user);
+          fn(null, user);                    
+        }
+    }          
+  });
+  
+  
   db.view('user/byUserName', { key: username }, function (error, result) {
     if (!error) {
       // check the return value
@@ -150,10 +167,11 @@ function findByUsername(username, fn) {
         return fn(null, null);
       } else {
         // found user!
-        console.log('Found user:' + result);
+        //console.log('Found user: ' + result);
+        //console.log('Found user: ' + JSON.stringify(result[0]));
 
         // You have to parse the JSON!!!  This is what it looks like:
-        
+        /*
         [
           {
             "id":"Dan",
@@ -173,15 +191,19 @@ function findByUsername(username, fn) {
         ]
         
         //here's where you return the "value" from above: 
-        return fn(null, result[0]);
+        var user = result[0].value;
+        
+        console.log('Found user: ' + user);
+
+        return fn(null, user);
       }
     } else {
       // Error
       return fn(null, null);
     }
   });
-  */
-
+  
+*/
   
   db.get(username, function(error, result) {
     if (!error) {
@@ -191,7 +213,6 @@ function findByUsername(username, fn) {
       return fn(null, null);
     }
   });
-  
 
 }
 
