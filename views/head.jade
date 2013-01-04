@@ -15,6 +15,30 @@ head
 
   include scripts
 
+  //script(//cdnjs.cloudflare.com/ajax/libs/headjs/0.99/head.min.js)
+
+  //load css via head.js
+  script
+    head.load(
+    
+    '/css/bootstrap.min.css', 
+    '/css/responsive.min.css', 
+    '/css/docs.css'
+
+    );
+
+
+
+
+  script
+    head.js(
+
+    "//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js",  
+    "//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js",  
+    "js/global.js"
+
+    );
+
   //- include fonts
 
   // icons 
