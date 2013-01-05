@@ -10,10 +10,10 @@
  * ========================================================== */
 
 var express         = require('express')
-  , http            = require('http')             // http://nodejs.org/docs/v0.3.1/api/http.html
-  , path            = require('path')             // http://nodejs.org/docs/v0.3.1/api/path.html
   , config          = require('./config')
   , utils           = require('./utils')
+  , http            = require('http')             // http://nodejs.org/docs/v0.3.1/api/http.html
+  , path            = require('path')             // http://nodejs.org/docs/v0.3.1/api/path.html
   , gzippo          = require('gzippo')           // https://npmjs.org/package/gzippo
   , lessMiddleware  = require('less-middleware')  // https://npmjs.org/package/less-middleware
   , flash           = require('connect-flash')    // https://npmjs.org/package/connect-flash (needed for passport?)
@@ -56,7 +56,7 @@ app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.use(express.favicon(__dirname + '/public/favicon.ico'));
+  app.use(express.favicon(__dirname + '/public/ico/favicon.ico'));
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());

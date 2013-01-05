@@ -2,14 +2,13 @@
 /* ==============================================================
     Include required packages / Module Dependencies
 =============================================================== */
-var fs              = require('fs')              // http://nodejs.org/docs/v0.3.1/api/fs.html
-  , path            = require('path')            // http://nodejs.org/docs/v0.3.1/api/path.html
-  , config          = require('../config')
+var config          = require('../config')
   , utils           = require('../utils')
+  , fs              = require('fs')              // http://nodejs.org/docs/v0.3.1/api/fs.html
+  , path            = require('path')            // http://nodejs.org/docs/v0.3.1/api/path.html
   , flash           = require('connect-flash')   // https://npmjs.org/package/connect-flash 
-  //, util            = require('util')          // http://nodejs.org/docs/v0.3.1/api/util.html
   , passport        = require('passport')        // https://npmjs.org/package/passport
-  , LocalStrategy   = require('passport-local').Strategy
+  , LocalStrategy   = require('passport-local').Strategy  // See above
   , pass            = require('pwd')             // https://github.com/visionmedia/node-pwd
   , cradle          = require('cradle');         ///https://npmjs.org/package/cradle
 
@@ -51,10 +50,10 @@ db.exists(function (err, exists) {
       //====================================================  
       var designdoc = {
         "views": {
-          "byUserName": {
+          "byUsername": {
               "map": "function (doc) { if (doc.username) { emit(doc.username, doc) } }"
           },
-          "byUserEmail": {
+          "byEmail": {
               "map": "function (doc) { if (doc.email) { emit(doc.email, doc) } }"
           },
           "all": {
@@ -76,6 +75,8 @@ db.exists(function (err, exists) {
       //===================================================
       //   Save a test User
       //===================================================
+      
+      // Define the user document
       var testuser = {
         jsonType: 'user',
         username: 'Dan',
@@ -86,36 +87,25 @@ db.exists(function (err, exists) {
         updated_at: new Date()
       };
 
-      // See if test user exists
-      db.get(testuser.username, function (err, doc) {
-        if (err) {
-          // Handle error
-          console.log('Test User does not exist!\n');
-          
-          // Add the User (password is hardcoded as "passw0rd")
-          pass.hash('passw0rd', function(err, salt, hash){
-            
-            if (err) throw err;
-            
-            // store the salt & hash in the DB
-            testuser.hash = hash;
-            testuser.salt = salt;
+      // Hash the password (password is hardcoded as "passw0rd")
+      pass.hash('passw0rd', function(error, salt, hash){
+        if (error) throw err;
+        
+        // update the salt & hash
+        testuser.hash = hash;
+        testuser.salt = salt;
 
-            db.save(testuser.username,   // Document Name
-            testuser,                    // Document Contents (user above)
-            function(error, result) {
-              if(!error) {
-                console.log("Added Test User" + result + '\n');
-              } else {
-                console.log("Error: " + error + '\n');
-              }
-            });
-
-          })
-        } else {
-          // Handle success
-          console.log('USER: ' + doc + '\n');
-        }
+        // Save the record to the database
+        db.save(null,             // Document ID, let couchDB assign
+        testuser,                 // Document Contents (testuser above)
+        function(error1, result) {
+          if(!error1) {
+            console.log("Added Test User" + result + '\n');
+          } else {
+            console.log("Error: " + error + '\n');
+            throw err;
+          }
+        });
       });
     });
   }
@@ -124,8 +114,7 @@ db.exists(function (err, exists) {
 /* ===================================================
    Needed for Passport 
 ====================================================== */
-// Doesn't need to query via a view, can just get doc
-// by id directly
+// Doesn't need to query via a view, can just get doc by id directly
 function findById(id, fn) {
   db.get(id, function(error, result) {
     if (!error) {
@@ -137,116 +126,39 @@ function findById(id, fn) {
 }
 
 /* ===================================================
-   Needed for Passport //TODO query by view
+   Needed for Passport 
 ====================================================== */
-function findByUsername(username, fn) {
-
-  /*
-  db.view('user/byUserName', {key: username}, function (error, result) { 
-    if (error) {
-      //fn(new Error('User ' + username + ' does not exist'));
-    }
-    else {
-        if (result.length != 1) {
-          //fn(new Error('User ' + username + ' does not exist'));
-        }
-        else {
-          var user = result[0].value);
-          console.log('Found user: ' + user);
-          fn(null, user);                    
-        }
-    }          
-  });
-  
-  
-  db.view('user/byUserName', { key: username }, function (error, result) {
-    if (!error) {
-      // check the return value
-      if (0 === result.length) {
-        // didn't return anything
-        return fn(null, null);
+/* =========================================================
+ * FINDBY: Looks up users in the database either by name
+ *         or email address.
+ *
+ * @param {String} should be either 'Username' or 'Email'
+ * @param {String} key you want, 'Dan' or 'dan@dan.com'
+ * @param {Function} callback
+ *
+ * Examples:
+ *   findBy('Username', 'Dan', callback)
+ * ========================================================== */
+function findBy(attr, val, callback) {
+  db.view('user/by'+(attr), {key: val}, function (err, res) { 
+    if (err) {
+      var msg = 'Error: ' + attr + ', ' + val;
+      //console.log(msg);
+      callback(msg, null);
+    } else {
+      if (res.length === 0) {
+        var msg = 'No matching user: ' + attr + ', ' + val;
+        //console.log(msg);
+        callback(null, null);
       } else {
-        // found user!
-        //console.log('Found user: ' + result);
-        //console.log('Found user: ' + JSON.stringify(result[0]));
-
-        // You have to parse the JSON!!!  This is what it looks like:
-        /*
-        [
-          {
-            "id":"Dan",
-            "key":"Dan",
-            "value":{
-              "_id":"Dan",
-              "_rev":"1-c81f0f740e80702de031a13b50ec6f21",
-              "jsonType":"user",
-              "username":"Dan",
-              "hash":"ù7I\u001e?ß(^E¢jär?ë\u000f?.*¡N§bVt±·'??E\u001dWw\u001aÉ\u0010\u001f >L\tAâkºr\u0018/\u0016ôx2X¡,°ÿ\u001f-óIOçúUb ??pF\u000fqzS\u0012Fû09?íEV?I\u0015é\u0000\u0015â'F(\u001eì\u0012?k'zT?1UÆ0{?°\u0011?b?¿?\u001e\u001aßJ°Oz?2?ª",
-              "salt":"e/0YT1+tXJe9fX3yB8AfQgFf+imyI/P2upXfjUOZcshGhiKsZMBPnleSXVPOyWac0lSRmLVpGS8FfMfvr4zDp2mguNgcSV3l/POrHU4mcy73V1xD1NFfXIwMW5LLXP0hVBTX549Nkm3lBjPECCtyBKdA5TYplTbskO9TYwZAKJk=",
-              "email":"dan@somedomain.com",
-              "created_at":"2013-01-03T06:02:44.800Z",
-              "updated_at":"2013-01-03T06:02:44.800Z"
-            }
-          }
-        ]
-        
-        //here's where you return the "value" from above: 
-        var user = result[0].value;
-        
-        console.log('Found user: ' + user);
-
-        return fn(null, user);
+        var user = res[0].value;
+        // should show only on console variable
+        //var util = require('util');
+        //console.log('Event inspected: ' + util.inspect(user, true, null, true));
+        callback(null, user);                    
       }
-    } else {
-      // Error
-      return fn(null, null);
     }
-  });
-  
-*/
-  
-  db.get(username, function(error, result) {
-    if (!error) {
-      return fn(null, result);
-    } else {
-      console.log('Error in findByUsername!', error);
-      return fn(null, null);
-    }
-  });
-
-}
-
-/* ===================================================
-   Added to support signup - TODO Needed for Passport ?  Use in the signup?
-====================================================== */
-function findByEmail(email, fn) {
-  db.view('user/byUserEmail', { key: email }, function (error, result) {
-    if (!error) {
-      // check the return value
-      if (0 === result.length) {
-        // didn't return anything
-        return fn(null, null);
-      } else {
-        // found user!
-        return fn(null, result);
-      }
-    } else {
-      // Error
-      return fn(null, null);
-    }
-  });
-
-  /*
-  db.get(email, function(error, result) {
-    if (!error) {
-      return fn(null, result);
-    } else {
-      console.log('Error in findByEmail!', error);
-      return fn(null, null);
-    }
-  });
-  */
-
+  }); 
 }
 
 /* ===================================================
@@ -272,11 +184,11 @@ function ensureAuthenticated(req, res, next) {
  *   this will be as simple as storing the user ID when serializing, and finding
  *   the user by ID when deserializing.  
  */
-passport.serializeUser(function(user, done) {
-  done(null, user.id); 
+passport.serializeUser(function (user, done) {
+  done(null, user._id); 
 });
 
-passport.deserializeUser(function(id, done) {
+passport.deserializeUser(function (id, done) {
   findById(id, function (err, user) {
     done(err, user);
   });
@@ -298,30 +210,19 @@ passport.use(new LocalStrategy(function(username, password, done) {
       // username, or the password is not correct, set the user to `false` to
       // indicate failure and set a flash message.  Otherwise, return the
       // authenticated `user`.
-      findByUsername(username, function(err, user) {
-        
+      
+      findBy('Username', username, function (err, user) {
         if (err) { return done(err); }
-        
-        if (!user) { 
-          
-          // If no user found
+        if (!user) {   // If no user found
           return done(null, false, { message: '<strong>Oh Snap!</strong> We do not recognize your username ' + username + '.'}); 
-        
-        } else {
-          
-          // else check password
-          pass.hash(password, user.salt, function(err, hash){
-            
-            if (err) { return done(err); }
-            
-            if (user.hash == hash) {
-              // matches
-              return done(null, user);
-            } else {
-              // doesn't match
+        } else {       // Check password
+          pass.hash(password, user.salt, function (error, hash){
+            if (error) { return done(error); }
+            if (user.hash !== hash) {  // doesn't match
               return done(null, false, { message: '<strong>Oh Snap!</strong> Your password does not match.' }); 
+            } else {                   // matches
+              return done(null, user);
             }
-
           });
         }
       });
@@ -339,12 +240,14 @@ module.exports = function(app) {
   app.get('/account', ensureAuthenticated, account);
   app.get('/signup', signup);
   app.get('/login', login);
-  app.get('/logout', logout);
+  app.get('/logout', ensureAuthenticated, logout);
   app.get('/welcome', welcome);
   
   // -- POST Routes
   app.post('/register', register);
-  app.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), postlogin);
+  app.post('/login', passport.authenticate('local', { successRedirect: '/account',
+                                                      failureRedirect: '/login',
+                                                      failureFlash: true }) );
 
   // --- Error Routes (always last!)
   app.get('/404', fourofour);
@@ -414,7 +317,7 @@ var fourofour = function(req, res, next){
   // will match /404 after this one, and we're not
   // responding here
   next();
-}
+};
 
 ///GET /403
 ///////////////////////////////
@@ -442,104 +345,71 @@ var fourothree = function(req, res, next){
   res.type('txt').send('Not Allowed!');
 
   next(err);
-}
+};
 
 ///GET /500
 ///////////////////////////////
 var fivehundred = function(req, res, next){
   // trigger a generic (500) error
   next(new Error('Testing 1,2,3!'));
-}
+};
 
 //POST /signup
 ///////////////////////////////////////////////////////////////
 var register = function(req, res) {
 
-  // Check if the user exists
-  db.get(req.body.username, function (err, result) {
-    if (!err) {
-      
-      // Found User!
-      console.log('Found user:' + result);
-      req.flash('error', '<strong>Oh Snap!</strong> We already have a user by that name.');
-      res.redirect('/signup');
-
-    } else {
-      
-      // didn't find user
-      console.log('Did not find user' + err);
-      // User does not yet exist
-      // now check if the email exists
-      db.view('user/byUserEmail', { key: req.body.email }, function (errs, doc) {
-        if (!errs) {
-          // check the return value
-          if (0 === doc.length) {
-            // didn't return anything
-            console.log('did not find email' + doc);
-
-
-            // Add the User (password is hardcoded as "passw0rd")
-            pass.hash(req.body.password, function (err, salt, hash) {
+  findBy('Username', req.body.username, function (err, user) {
+      if (user) {    // Found User! Bail out...
+        //console.log('Found user:' + user.username);
+        req.flash('error', '<strong>Oh Snap!</strong> We already have a user by that name.');
+        res.redirect('/signup');
+        } else {     // Check for an existing email address
+          findBy('Email', req.body.email, function (err1, user1) {
+            if (user1) {  // Found email!  Bail out...
+              //console.log('Found email' + user1.username);
+              req.flash('error', '<strong>Oh Snap!</strong> Sorry, We already have someone with that email address.');
+              res.redirect('/signup'); 
+            } else {   // User name and email does not yet exist - OK
               
-              if (err) throw err;
-              
-              // store the salt & hash in the DB
-              var userdoc = {
-                jsonType: 'user',
-                username: req.body.username,
-                hash: hash,
-                salt: salt,
-                email: req.body.email,
-                created_at: new Date(),
-                updated_at: new Date()
-              };
+              // Hash thier password
+              pass.hash(req.body.password, function (err2, salt, hash) {
+                
+                if (err2) throw err;
+                
+                // store the salt & hash in the DB
+                var userdoc = {
+                  jsonType: 'user',
+                  username: req.body.username,
+                  hash: hash,
+                  salt: salt,
+                  email: req.body.email,
+                  created_at: new Date(),
+                  updated_at: new Date()
+                };
 
-              db.save(userdoc.username, userdoc, function (err, result) {
-                if(!err) {
-                  console.log('Saved new user: success! ' + result);
-                  // calling req.login below will make passportjs setup 
-                  // the user object, serialize the user, etc.
-                  // This has to be placed here *after* the database save 
-                  // because the result gives us an object with an .id 
-                  req.login(result, {}, function(err) {
-                    if (err) { 
-                      console.log('Passport login did not work!', err); 
-                    } else {
-                      res.redirect("/welcome");
-                    }
-                  });
-                } else {
-                  result.send(error.status_code);
-                }
+                db.save(null, userdoc, function (err3, result) {
+                  if(!err3) {
+                    //console.log('Saved new user: success! ' + result);
+                    // calling req.login below will make passportjs setup 
+                    // the user object, serialize the user, etc.
+                    // This has to be placed here *after* the database save 
+                    // because the result gives us an object with an .id 
+                    req.login(result, {}, function (err4) {
+                      if (err4) { 
+                        console.log('Passport login did not work!' + err); 
+                      } else {
+                        res.redirect("/welcome");
+                      }
+                    });
+                  } else {
+                    console.log('User save did not work!' + err); 
+                    result.send(error.status_code);
+                  }
+                });
               });
-            });
-          } else {
-            
-            // Found email!
-            console.log('Found email' + doc);
-            req.flash('error', '<strong>Oh Snap!</strong> Sorry, We already have someone with that email address.');
-            res.redirect('/signup');           
-          
-          }
-        } else {
-
-          console.log('Error: ' + err);
-        
-        }
-      });
-    }
+            }
+        });
+      }
   });
-}
 
-// POST /login
-//   Use passport.authenticate() as route middleware to authenticate the
-//   request.  If authentication fails, the user will be redirected back to the
-//   login page.  Otherwise, the primary route function function will be called.
-//
-//   curl -v -d "username=Dan&password=passw0rd" http://127.0.0.1:3000/login
-//
-//POST Login
-///////////////////////////////
-var postlogin = function(req, res) {
-    res.redirect('/account');
 };
