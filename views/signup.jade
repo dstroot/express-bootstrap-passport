@@ -3,7 +3,6 @@
 extends layout
 
 block content
-  
   div.container
     //- 
       div.row
@@ -28,6 +27,50 @@ block content
         script 
           head.ready(function() {
              $("#inputUserName").focus();
+             $("#hint").css('display', 'none');
+          });
+
+        //- check entered email
+        script
+          head.ready(function() {
+            
+            var $email = $('#inputEmail');
+            var $hint = $("#hint");
+
+            $email.on('blur', function() {
+              $hint.css('display', 'none').empty();
+              $(this).mailcheck({
+                suggested: function(element, suggestion) {
+                  if(!$hint.html()) {
+                    // First error - fill in/show entire hint element
+                    var suggestion = "Did you mean <span class='suggestion'>" +
+                                      "<span class='address'>" + suggestion.address + "</span>"
+                                      + "@<a href='#' class='domain'>" + suggestion.domain + 
+                                      "</a></span>?";
+                                      
+                    $hint.html(suggestion).fadeIn(150);
+                  } else {
+                    // Subsequent errors
+                    $(".address").html(suggestion.address);
+                    $(".domain").html(suggestion.domain);
+                  }
+                },
+                  empty: function(element) {
+                  // callback code
+                }
+              });
+            });
+
+            $hint.on('click', '.domain', function() {
+              // On click, fill in the field with the suggestion and remove the hint
+              $email.val($(".suggestion").text());
+              $hint.fadeOut(200, function() {
+                $(this).empty();
+              });
+              $("#inputPassword").focus();
+              return false;
+            });
+
           });
 
         //- set focus for the user regular version
@@ -42,15 +85,18 @@ block content
             div.control-group
                 label.control-label(for='inputUserName') Your Name
                 div.controls
-                  input#inputUserName(name='username', type='text', placeholder='Username')
+                  //input#inputUserName.input-large(name='username', data-validation-ajax-ajax='/json/username', type='text', placeholder='Username', required)
+                  input#inputUserName.input-large(name='username', type='text', placeholder='Username', required)         
               div.control-group
                 label.control-label(for='inputEmail') Email
                 div.controls
-                  input#inputEmail(name='email', type='email', placeholder='you@youremail.com', required)
+                  input#inputEmail.input-large(name='email', type='email', placeholder='you@youremail.com', required)
+                  //- For mailcheck
+                  div#hint  
               div.control-group
                 label.control-label(for='inputPassword') Password
                 div.controls
-                  input#inputPassword(name='password', type='password', placeholder='Passw0rd')
+                  input#inputPassword.input-large(name='password', type='password', placeholder='Passw0rd', required)
               div.control-group
                 div.controls
                   button.btn(type='submit') Sign Up

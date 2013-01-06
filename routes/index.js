@@ -242,6 +242,37 @@ module.exports = function(app) {
   app.get('/login', login);
   app.get('/logout', ensureAuthenticated, logout);
   app.get('/welcome', welcome);
+
+  //Retrieve a user's tags
+  //-------------------------------------------------------------
+  app.get('/json/username', function(req, res) {
+    
+    findBy('Username', req.body.username, function (err, user) {
+        var msg = {};
+        if (user) {    
+          // Found User! Bail out...
+          // JSON response
+          msg =  {
+            "value": "username",
+            "valid": 0,
+            "message": "We already someone..."
+          };
+        } else {
+          // JSON response
+          msg =  {
+            "value": "username",
+            "valid": 1,
+            "message": "OK"
+          };
+        }
+
+        res.setHeader('Cache-Control', 'max-age=0, must-revalidate, no-cache, no-store');
+        res.writeHead(200, { 'Content-type': 'application/json' });
+        res.write(JSON.stringify(msg), 'utf-8');
+        res.end('\n');                   
+      });  
+      
+  });
   
   // -- POST Routes
   app.post('/register', register);
