@@ -24,6 +24,16 @@ config.couchdb.username = 'posterist';
 config.couchdb.password = 'ksolNiWxEQFanJ7';
 
 /* ==========================================================
+ * Redis Configuration (for sessions)
+ * ========================================================== */
+config.redis            = {};
+config.redis.togourl    = 'redis://dstroot:8babf8f8767f3e4fa0c35731875a42e7@carp.redistogo.com:9458/';
+config.redis.salt       = 'ksolNiWxEQFanJ7';
+//config.redis.host       = '127.0.0.1';   // Not needed for RedistoGo
+//config.redis.port       = '6379';        // Not needed for RedistoGo
+//config.redis.pass       = 'myredispass'; // Not needed for RedistoGo
+
+/* ==========================================================
  * Misc
  * ========================================================== */
 config.google           = {};

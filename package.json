@@ -1,7 +1,7 @@
 {
   "name": "express-bootstrap-passport",
   "description": "integration of express, bootstrap and passport",
-  "version": "0.0.1-8",
+  "version": "0.0.1-9",
   "private": true,
   "analyze": false,
   "readme": "Nothing here!",
@@ -26,6 +26,7 @@
     "cradle": "0.6.x",
     "gzippo": "*",
     "connect-flash": "0.1.x",
+    "connect-redis": "1.4.x",
     "passport": ">= 0.0.0",
     "passport-local": ">= 0.0.0",
     "pwd": "*"

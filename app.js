@@ -12,27 +12,41 @@
 var express         = require('express')
   , config          = require('./config')
   , utils           = require('./utils')
+//  , connect         = require('connect')
   , http            = require('http')             // http://nodejs.org/docs/v0.3.1/api/http.html
   , path            = require('path')             // http://nodejs.org/docs/v0.3.1/api/path.html
-  , gzippo          = require('gzippo')           // https://npmjs.org/package/gzippo
+//  , gzippo          = require('gzippo')           // https://npmjs.org/package/gzippo
   , lessMiddleware  = require('less-middleware')  // https://npmjs.org/package/less-middleware
   , flash           = require('connect-flash')    // https://npmjs.org/package/connect-flash (needed for passport?)
   , passport        = require('passport');        // https://npmjs.org/package/passport
 
 var app = express();
 
-/* ==============================================================
-    Configuration
-=============================================================== */
 // Controls logging
 var showconsole = true;   
 
-// Used for session hashes
-var salt = '47sdkfjk23';
+/* ==============================================================
+  Setup Redis for a Session Store
+=============================================================== */
 
+// To use RedisToGo as a session store!
+// URL format = 'redis://username:password@my.host:6789'
+// http://scottwoodall.com/configure-express-nodejs-to-connect-to-redistogo-on-heroku-for-sessions/
+
+// Used for session length
 var hour = 3600000;
 var day = (hour * 24);
 var month = (day * 30);
+
+// https://npmjs.org/package/connect-redis
+var RedisStore = require('connect-redis')(express); 
+
+// Parse the RedisToGo URL into variable rtg
+var rtg   = require('url').parse(config.redis.togourl);
+
+/* ==============================================================
+    Configuration
+=============================================================== */
 
 app.configure(function(){
   /* =================================================
@@ -54,6 +68,11 @@ app.configure(function(){
   });
 
   app.set('port', process.env.PORT || 3000);
+
+  /* =================================================
+   View Engine 
+  =================================================== */
+
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.favicon(__dirname + '/public/ico/favicon.ico'));
@@ -61,16 +80,36 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser('your secret here'));
-  app.use(express.session());
 
-  // ---  Initialize Passport!  
-  // Also use passport.session() middleware, to support
+  /* =================================================
+   Session Storage 
+  =================================================== */
+  // The default session store is just your server's memory.
+  // Thus a reboot wipes out your sessions and is of course
+  // not scalable beyond a single server.  Lets use Redis instead.
+
+  //app.use(express.session());
+
+  app.use(express.session({ 
+    store: new RedisStore({ 
+      host: rtg.hostname, 
+      port: rtg.port, 
+      db: rtg.auth.split(':')[0], 
+      pass: rtg.auth.split(':')[1]
+    }), 
+    secret: config.redis.salt, 
+    maxAge: month 
+  }));
+  
+  /* =================================================
+   Passport Authentication 
+  =================================================== */
+  // Important! Must come *after* session middleware: app.use(express.session());
+  // Initialize Passport and also use passport.session() middleware, to support
   // persistent login sessions (recommended).
-  // Must come after app.use(express.session());
-  app.use(flash());  // for passport stuff
-  app.use(passport.initialize());
-  app.use(passport.session());
-
+  
+  // IDK what this is below, I think it's for if you want to not use flash messages
+  /*
   app.use(function(req, res, next) {
     if(req.isAuthenticated()) {
       res.locals.user = req.user
@@ -83,8 +122,22 @@ app.configure(function(){
     req.session.messages = []
     next()
   })
+  */
+
+  app.use(flash());  // for passport messages
+  app.use(passport.initialize());
+  app.use(passport.session());
   
-  // --- Compile Less to css
+  /* =================================================
+   Complile the Less code to css 
+  =================================================== */
+
+  // Basically when we get a request for a css file the less 
+  // middleware sees if exists.  If not it looks for a similarly 
+  // named Less file compiles it.
+  // GET /styles.css will cause styles.less > styles.css
+  // Simple no?
+
   app.use(lessMiddleware({ 
      dest: __dirname + '/public/css'
    , src: __dirname + '/less'
@@ -92,26 +145,46 @@ app.configure(function(){
    , compress: true
    , debug: true
   }));
-  
-  // Replace the static provider with gzippo's to serve up gzip'ed files
-  app.use(gzippo.staticGzip(path.join(__dirname + '/public', { maxAge: day })));
-  //app.use(express.static(path.join(__dirname, '/public')));
 
-  // Routing and error handling
+  /* =================================================
+   Serving Static Files 
+  =================================================== */
+
+  // express on its own has no notion of a "file". The express.static()
+  // middleware checks for a file matching the `req.path` within the directory
+  // that you pass it. In this case "GET /js/app.js" will look for "./public/js/app.js".
+
+  // if you want to serve files from several directories, you can use express.static()
+  // multiple times! Here we're passing "./public/css", this will allow "GET /style.css" 
+  // instead of "GET /css/style.css".  This means we can put our assets in sub-directories
+  // but keep this stuff of out HTML /js /css /ico  etc.
+
+  // Order is important! You may `app.use(app.router)` before or after these
+  // static() middleware. If placed before them your routes will be matched 
+  // BEFORE file serving takes place. If placed after as shown here then 
+  // file serving is performed BEFORE any routes are hit.
+
+  app.use(express.compress());     // for GZIP compression (not sure if this works though!)
+  app.use(express.static(__dirname + '/public'));
+  app.use(express.static(__dirname + '/public/css'));
+  app.use(express.static(__dirname + '/public/ico'));
+  app.use(express.static(__dirname + '/public/img'));
+  app.use(express.static(__dirname + '/public/js'));
+  app.use(express.static(__dirname + '/public/js/lib'));
+
+  /* =================================================
+   Application Routing (and error handling)
+  =================================================== */
  
-  // "app.router" positions our routes 
-  // above the middleware defined below,
-  // this means that Express will attempt
-  // to match & call routes *before* continuing
-  // on, at which point we assume it's a 404 because
-  // no route has handled the request.
+  // "app.router" positions our routes above the middleware defined below,
+  // this means that Express will attempt to match & call routes *before* 
+  // continuing on, at which point we assume it's a 404 because no route 
+  // has handled the request.
 
   app.use(app.router);
 
-  // Since this is the last non-error-handling
-  // middleware use()d, we assume 404, as nothing else
-  // responded.
-
+  // Since this is the last non-error-handling middleware use()d, 
+  // we assume 404, as nothing else responded.  Test:
   // $ curl http://localhost:3000/notfound
   // $ curl http://localhost:3000/notfound -H "Accept: application/json"
   // $ curl http://localhost:3000/notfound -H "Accept: text/plain"
@@ -136,17 +209,14 @@ app.configure(function(){
     
   });
 
-  // error-handling middleware, take the same form
-  // as regular middleware, however they require an
-  // arity of 4, aka the signature (err, req, res, next).
-  // when connect has an error, it will invoke ONLY error-handling
-  // middleware.
+  // Error-handling middleware, take the same form as regular middleware, 
+  // however they require an arity of 4, aka the signature (err, req, res, next).
+  // when connect has an error, it will invoke ONLY error-handling middleware.
 
-  // If we were to next() here any remaining non-error-handling
-  // middleware would then be executed, or if we next(err) to
-  // continue passing the error, only error-handling middleware
-  // would remain being executed, however here
-  // we simply respond with an error page.
+  // If we were to next() here any remaining non-error-handling middleware would 
+  // then be executed, or if we next(err) to continue passing the error, only 
+  // error-handling middleware would remain being executed, however here we 
+  // simply respond with an error page.
 
   app.use(function(err, req, res, next){
     // we may use properties of the error object
@@ -154,6 +224,8 @@ app.configure(function(){
     // we possibly recovered from the error, simply next().
     res.status(err.status || 500);
     res.render('500', { error: err });
+    console.log('Caught exception: '+err+'\n'+err.stack);
+    console.log('\u0007'); // Terminal bell
   });
 
 }); 
@@ -161,6 +233,16 @@ app.configure(function(){
 /* ==============================================================
     Configuration Environments
 =============================================================== */
+/* ==============================================================
+  NOTE: To alter the environment we can set the NODE_ENV environment 
+  variable, for example:
+
+    $ NODE_ENV=production node app.js
+
+  This is *very* important, as many caching mechanisms are *only* 
+  enabled when in production.
+=============================================================== */
+
 app.configure('development', function(){
   showconsole = true;        // Turn on logging 
   app.locals.pretty = true;  // line breaks in the jade output
@@ -192,10 +274,15 @@ app.configure('production', function(){
 /* ==============================================================
     Launch the server
 =============================================================== */
-// Minify and bundle .js
+// Minify and bundle our .js files
+// Not sure this is the best way anymore. Used to be that serving one
+// big .js file was faster than requesting a bunch of small ones but with
+// Loading libraries like head.js this might be moot.
+
 utils.bundle();
 
 // Launch Server
+
 var server = http.createServer(app).listen(app.get('port'), function(){
   if (showconsole) console.log("Express server listening on port %d in %s mode", app.get('port'), app.settings.env);
 });
@@ -203,4 +290,5 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 //==============================================================
 //    Application Routing
 //==============================================================
+
 require('./routes')(app);
