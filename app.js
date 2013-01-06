@@ -55,6 +55,9 @@ app.configure(function(){
   =================================================== */
   app.locals.errors = {};
   app.locals.message = {};
+  
+  // http://expressjs.com/api.html#app.locals
+  // Reading above most of these should be moved to app.locals
 
   app.use(function(req, res, next){
     res.locals.session      = req.session;
@@ -108,7 +111,7 @@ app.configure(function(){
   // Initialize Passport and also use passport.session() middleware, to support
   // persistent login sessions (recommended).
   
-  // IDK what this is below, I think it's for if you want to not use flash messages
+  // IDK what this is below, I think it's for if you want to *not* use flash messages
   /*
   app.use(function(req, res, next) {
     if(req.isAuthenticated()) {
@@ -244,6 +247,11 @@ app.configure(function(){
 =============================================================== */
 
 app.configure('development', function(){
+  // Keep search engines out using robots.txt
+  app.all('/robots.txt', function(req,res) {
+    res.charset = 'text/plain';
+    res.send('User-agent: *\nDisallow: /');
+  });
   showconsole = true;        // Turn on logging 
   app.locals.pretty = true;  // line breaks in the jade output
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
@@ -269,6 +277,12 @@ app.configure('development', function(){
 app.configure('production', function(){  
   showconsole = false;
   app.use(express.errorHandler());
+  // Allow all search engines  www.robotstxt.org/
+  // www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449
+  app.all('/robots.txt', function(req,res) {
+    res.charset = 'text/plain';
+    res.send('User-agent: *');
+  });
 });
 
 /* ==============================================================
