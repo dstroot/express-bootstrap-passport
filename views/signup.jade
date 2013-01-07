@@ -28,6 +28,7 @@ block content
           head.ready(function() {
              $("#inputUserName").focus();
              $("#hint").css('display', 'none');
+             $(function () { $("input").not("[type=submit]").jqBootstrapValidation(); } );
           });
 
         //- check entered email
@@ -85,8 +86,8 @@ block content
             div.control-group
                 label.control-label(for='inputUserName') Your Name
                 div.controls
-                  //input#inputUserName.input-large(name='username', data-validation-ajax-ajax='/json/username', type='text', placeholder='Username', required)
-                  input#inputUserName.input-large(name='username', type='text', placeholder='Username', required)         
+                  input#inputUserName.input-large(name='username', data-validation-ajax-ajax='/json/username', type='text', placeholder='Username', required)
+                  //input#inputUserName.input-large(name='username', type='text', placeholder='Username', required)         
               div.control-group
                 label.control-label(for='inputEmail') Email
                 div.controls
@@ -96,7 +97,7 @@ block content
               div.control-group
                 label.control-label(for='inputPassword') Password
                 div.controls
-                  input#inputPassword.input-large(name='password', type='password', placeholder='Passw0rd', required)
+                  input#inputPassword.input-large(name='password', minlength="6", type='password', placeholder='Passw0rd', required)
               div.control-group
                 div.controls
                   button.btn(type='submit') Sign Up

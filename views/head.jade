@@ -26,7 +26,7 @@ head
      , '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'
      , '/js/bootstrap.js'
      , '/js/lib/mailcheck/mailcheck.min.js'
-     //, '/js/lib/jqBootstrapValidation/jqBootstrapValidation.js'
+     , '/js/lib/jqBootstrapValidation/jqBootstrapValidation.js'
     );
   //- Google Tracking ==================================== 
 
@@ -45,6 +45,8 @@ head
   //- on using the asynchronous syntax. For step-by-step instructions on setting up 
   //- tracking, see the Help Center article on setting up tracking. 
 
+  //- NOTE - we added code to push errors to Google as well - see below.
+
   script(type='text/javascript')
     
     var _gaq = _gaq || [];  
@@ -58,6 +60,10 @@ head
 
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);  
     })();
+    window.onerror = function(message, file, line) {
+      var sFormattedMessage = '[' + file + ' (' + line + ')] ' + message;
+      _gaq.push(['_trackEvent', 'Exceptions', 'Application', sFormattedMessage, null, true]);
+    };
   //- The snippet above represents the minimum configuration needed to track a page 
   //- asynchronously. It uses _setAccount to set the page's web property ID and then 
   //- calls _trackPageview to send the tracking data back to the Google Analytics servers.

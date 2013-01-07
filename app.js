@@ -4,7 +4,6 @@
  * utils.js v0.0.1
  * Author: Daniel J. Stroot
  * ========================================================== */
-
 /* ==========================================================
  * Include required packages / Module Dependencies
  * ========================================================== */
@@ -24,6 +23,20 @@ var app = express();
 
 // Controls logging
 var showconsole = true;   
+
+
+// define a custom res.message() method
+// which stores messages in the session
+// Taken from Express MVC example
+// better than connect-flash?
+app.response.message = function(msg){
+  // reference `req.session` via the `this.req` reference
+  var sess = this.req.session;
+  // simply add the msg to an array for later
+  sess.messages = sess.messages || [];
+  sess.messages.push(msg);
+  return this;
+};
 
 /* ==============================================================
   Setup Redis for a Session Store
@@ -78,21 +91,35 @@ app.configure(function(){
 
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.use(express.favicon(__dirname + '/public/ico/favicon.ico'));
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(express.cookieParser('your secret here'));
 
   /* =================================================
-   Session Storage 
+   Other Middleware 
   =================================================== */
+
+  // logging
+  app.use(express.logger('dev'));
+  // parse request bodies (req.body)
+  app.use(express.bodyParser());
+  // parse request bodies (req.body)
+  app.use(express.methodOverride());
+
+  /* =================================================
+   Session Storage (need cookieParser and session)
+  =================================================== */
+
+  // cookieParser is required by session() middleware
+  // pass the secret for signed cookies These two must
+  // be placed in the order shown.
+
+  app.use(express.cookieParser('your secret here'));
+  
+  // session() populates req.session.
+  //app.use(express.session());  // Memory store
+  
   // The default session store is just your server's memory.
   // Thus a reboot wipes out your sessions and is of course
   // not scalable beyond a single server.  Lets use Redis instead.
-
-  //app.use(express.session());
-
+  
   app.use(express.session({ 
     store: new RedisStore({ 
       host: rtg.hostname, 
@@ -125,6 +152,25 @@ app.configure(function(){
     req.session.messages = []
     next()
   })
+
+  // Taken from Express MVC example
+  // better than connect-flash?
+
+  // expose the "messages" local variable when views are rendered
+  app.use(function(req, res, next){
+    var msgs = req.session.messages || [];
+
+    // expose "messages" local variable
+    res.locals.messages = msgs;
+
+    // expose "hasMessages"
+    res.locals.hasMessages = !! msgs.length;
+
+    // empty or "flush" the messages so they don't build up
+    req.session.messages = [];
+    next();
+  });
+
   */
 
   app.use(flash());  // for passport messages
@@ -150,7 +196,7 @@ app.configure(function(){
   }));
 
   /* =================================================
-   Serving Static Files 
+   Serving Static Files / Favicon
   =================================================== */
 
   // express on its own has no notion of a "file". The express.static()
@@ -167,6 +213,7 @@ app.configure(function(){
   // BEFORE file serving takes place. If placed after as shown here then 
   // file serving is performed BEFORE any routes are hit.
 
+  app.use(express.favicon(__dirname + '/public/ico/favicon.ico'));
   app.use(express.compress());     // for GZIP compression (not sure if this works though!)
   app.use(express.static(__dirname + '/public'));
   app.use(express.static(__dirname + '/public/css'));

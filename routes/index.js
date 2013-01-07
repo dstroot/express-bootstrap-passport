@@ -246,22 +246,26 @@ module.exports = function(app) {
   //Retrieve a user's tags
   //-------------------------------------------------------------
   app.get('/json/username', function(req, res) {
+
+    var parsedurl = require('url').parse(req.url, true);
+    console.log('Query Value: ' + parsedurl.query.value);
     
-    findBy('Username', req.body.username, function (err, user) {
+    findBy('Username', parsedurl.query.value, function (err, user) {
         var msg = {};
+        var d = new Date();
         if (user) {    
           // Found User! Bail out...
           // JSON response
           msg =  {
-            "value": "username",
+            "value": "username"+d.getMilliseconds(),
             "valid": 0,
-            "message": "We already someone..."
+            "message": "We already have someone..."
           };
         } else {
           // JSON response
           msg =  {
             "value": "username",
-            "valid": 1,
+            "valid": true,
             "message": "OK"
           };
         }
