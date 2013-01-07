@@ -11,7 +11,7 @@ var config = {};
 config.title            = 'Bootstrap';
 config.description      = 'Sleek, intuitive, and powerful front-end framework for faster and easier web development.';
 config.author           = '@MDO and @FAT';
-config.keywords         = 'cool, smooth, rockin'
+config.keywords         = 'cool, smooth, rockin!'
 config.version          = '2.2.2';
 
 /* ==========================================================

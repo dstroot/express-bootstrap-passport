@@ -25,12 +25,10 @@ var app = express();
 var showconsole = true;   
 
 
-// define a custom res.message() method
-// which stores messages in the session
-// Taken from Express MVC example
-// better than connect-flash?
+// define a custom res.message() method which stores messages in the session
+// Taken from Express MVC example (better than connect-flash?)
 app.response.message = function(msg){
-  // reference `req.session` via the `this.req` reference
+  // reference 'req.session' via the 'this.req' reference
   var sess = this.req.session;
   // simply add the msg to an array for later
   sess.messages = sess.messages || [];
@@ -54,7 +52,7 @@ var month = (day * 30);
 // https://npmjs.org/package/connect-redis
 var RedisStore = require('connect-redis')(express); 
 
-// Parse the RedisToGo URL into variable rtg
+// Parse the RedisToGo URL into variable 'rtg'
 var rtg   = require('url').parse(config.redis.togourl);
 
 /* ==============================================================
@@ -111,14 +109,15 @@ app.configure(function(){
   // pass the secret for signed cookies These two must
   // be placed in the order shown.
 
-  app.use(express.cookieParser('your secret here'));
+  app.use(express.cookieParser('dM3nMWcxF85n'));
   
   // session() populates req.session.
+
   //app.use(express.session());  // Memory store
   
   // The default session store is just your server's memory.
   // Thus a reboot wipes out your sessions and is of course
-  // not scalable beyond a single server.  Lets use Redis instead.
+  // not scalable beyond a single server.  Lets use Redis:
   
   app.use(express.session({ 
     store: new RedisStore({ 
@@ -294,12 +293,12 @@ app.configure(function(){
 =============================================================== */
 
 app.configure('development', function(){
+    showconsole = true;   // Turn on logging 
   // Keep search engines out using robots.txt
   app.all('/robots.txt', function(req,res) {
     res.charset = 'text/plain';
     res.send('User-agent: *\nDisallow: /');
   });
-  showconsole = true;        // Turn on logging 
   app.locals.pretty = true;  // line breaks in the jade output
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   app.use(express.logger(
@@ -322,7 +321,7 @@ app.configure('development', function(){
 });
 
 app.configure('production', function(){  
-  showconsole = false;
+  showconsole = false;   // Turn off logging
   app.use(express.errorHandler());
   // Allow all search engines  www.robotstxt.org/
   // www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449
