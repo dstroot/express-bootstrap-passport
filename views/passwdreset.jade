@@ -1,0 +1,34 @@
+//- https://github.com/visionmedia/jade
+extends layout
+
+block content
+
+  div.container
+    div.row
+      div.span5.offset2
+
+        //- set focus for the user headjs version
+        script 
+          head.ready(function() {
+             $("#inputEmail").focus();
+          });
+        //- set focus for the user regular version
+          script $(document).ready(function () { $("#inputUserName").focus(); })
+        
+        //- Password Reset form
+        br 
+        br 
+        form.form-horizontal(action='/reset', method='post')
+          fieldset
+            legend Reset your password:
+            //- Flash Message
+            if (message != '')
+              div.alert.alert-error
+                p !{message}
+            div.control-group
+              label.control-label(for='inputEmail') Email
+              div.controls
+                input#inputEmail.input-large(name='email', type='email', placeholder='you@youremail.com', required)
+            div.control-group
+              div.controls
+                button.btn.btn-primary(type='submit') Reset my Password

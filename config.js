@@ -1,7 +1,8 @@
 'use strict'                                    // for jshint
 /* ==========================================================
- * config.js v0.0.1
- * Author: Daniel J. Stroot
+ * config.js    v0.0.1
+ * Author:      Daniel J. Stroot
+ * Date:        01.07.2013
  * ========================================================== */
 
 /* ==========================================================
@@ -11,6 +12,7 @@ var config = {};
 config.title            = 'Bootstrap';
 config.description      = 'Sleek, intuitive, and powerful front-end framework for faster and easier web development.';
 config.author           = '@MDO and @FAT';
+config.email            = 'someone@somewhere.com'
 config.keywords         = 'cool, smooth, rockin!'
 config.version          = '2.2.2';
 
