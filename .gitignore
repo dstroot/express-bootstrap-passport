@@ -39,4 +39,4 @@ logs
 results
 
 npm-debug.log
-public/views/paypal.jade
+views/paypal.jade
