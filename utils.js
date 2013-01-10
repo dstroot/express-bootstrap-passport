@@ -1,7 +1,8 @@
 'use strict'                                    // for jshint
 /* ==========================================================
- * utils.js v0.0.1
- * Author: Daniel J. Stroot
+ * utils.js   v0.0.1
+ * Author:    Daniel J. Stroot
+ * Date:      01.07.2013
  * ========================================================== */
 
 /* ==========================================================
@@ -55,4 +56,24 @@ exports.bundle = function () {
     }
   console.log('bootstrap.js already exists.');
   });
+}
+
+/* =========================================================
+ * CREATEPASSWORD: Generate a random password for password
+ *                 resets.
+ *
+ * @return {string}
+ *
+ * Examples:
+ *   utils.creatPassword()
+ * ========================================================== */
+exports.createPassword = function () {
+    var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz!@#$%^&*()";
+    var string_length = 8;
+    var randomstring = '';
+    for (var i=0; i<string_length; i++) {
+        var rnum = Math.floor(Math.random() * chars.length);
+        randomstring += chars.substring(rnum,rnum+1);
+    }
+    return randomstring;
 }

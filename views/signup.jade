@@ -83,11 +83,15 @@ block content
         form.form-horizontal(action='/register', method='post')
           fieldset
             Legend Sign up!
+            //- Flash Message
+            if (message != '')
+              div.alert.alert-error
+                p !{message}
             div.control-group
                 label.control-label(for='inputUserName') Your Name
                 div.controls
-                  input#inputUserName.input-large(name='username', data-validation-ajax-ajax='/json/username', type='text', placeholder='Username', required)
-                  //input#inputUserName.input-large(name='username', type='text', placeholder='Username', required)         
+                  //- input#inputUserName.input-large(name='username', data-validation-ajax-ajax='/json/username', type='text', placeholder='Username', required)
+                  input#inputUserName.input-large(name='username', type='text', placeholder='Username', required)         
               div.control-group
                 label.control-label(for='inputEmail') Email
                 div.controls
@@ -100,12 +104,7 @@ block content
                   input#inputPassword.input-large(name='password', minlength="6", type='password', placeholder='Passw0rd', required)
               div.control-group
                 div.controls
-                  button.btn(type='submit') Sign Up
+                  button.btn.btn-primary(type='submit') Sign Up
 
-        //- Flash Message
-        if (message != '')
-          div.alert.alert-error
-            p !{message}
-        
-        p Already have an account? 
-          a(href="/login") Sign In
+        p <em>Already have an account? 
+          a(href="/login") <strong>Sign In!</strong></em>

@@ -1,9 +1,11 @@
 
 'use strict'                                    // for jshint
 /* ==========================================================
- * utils.js v0.0.1
- * Author: Daniel J. Stroot
+ * app.js     v0.0.1
+ * Author:    Daniel J. Stroot
+ * Date:      01.07.2013
  * ========================================================== */
+
 /* ==========================================================
  * Include required packages / Module Dependencies
  * ========================================================== */
@@ -11,10 +13,8 @@
 var express         = require('express')
   , config          = require('./config')
   , utils           = require('./utils')
-//  , connect         = require('connect')
   , http            = require('http')             // http://nodejs.org/docs/v0.3.1/api/http.html
   , path            = require('path')             // http://nodejs.org/docs/v0.3.1/api/path.html
-//  , gzippo          = require('gzippo')           // https://npmjs.org/package/gzippo
   , lessMiddleware  = require('less-middleware')  // https://npmjs.org/package/less-middleware
   , flash           = require('connect-flash')    // https://npmjs.org/package/connect-flash (needed for passport?)
   , passport        = require('passport');        // https://npmjs.org/package/passport
@@ -60,28 +60,50 @@ var rtg   = require('url').parse(config.redis.togourl);
 =============================================================== */
 
 app.configure(function(){
+
   /* =================================================
    The app.locals object is passed to all templates, 
    and it’s how helpers are defined in Express 3 applications. 
+   This is useful for providing helper functions to templates, 
+   as well as app-level data.
   =================================================== */
+  
+  app.locals({
+    title: config.title,
+    email: config.email,
+    description: config.description,
+    author: config.author,
+    keywords: config.keywords,
+    version: config.version,
+    google: config.google.analytics
+  });
+
   app.locals.errors = {};
   app.locals.message = {};
   
   // http://expressjs.com/api.html#app.locals
+  // https://github.com/visionmedia/express/wiki/New-features-in-3.x
   // Reading above most of these should be moved to app.locals
+  // app.locals are app-wide, res.locals are response specific.
 
   app.use(function(req, res, next){
     res.locals.session      = req.session;
-    res.locals.title        = config.title;
-    res.locals.description  = config.description;
-    res.locals.author       = config.author;
-    res.locals.keywords     = config.keywords;
-    res.locals.version      = config.version;
-    res.locals.google       = config.google.analytics;
+  //  res.locals.title        = config.title;
+  //  res.locals.description  = config.description;
+  //  res.locals.author       = config.author;
+  //  res.locals.keywords     = config.keywords;
+  //  res.locals.version      = config.version;
+  //  res.locals.google       = config.google.analytics;
     next();
   });
 
-  app.set('port', process.env.PORT || 3000);
+  /* =================================================
+  NOTE: The port environment variable is process.env.PORT, 
+  assign its value to the port variable, or assign 8080 if 
+  environment variable is not set (doesn't exist).
+  =================================================== */
+
+  app.set('port', process.env.PORT || 8080);
 
   /* =================================================
    View Engine 
@@ -94,11 +116,13 @@ app.configure(function(){
    Other Middleware 
   =================================================== */
 
+  // Deliver the favicon
+  app.use(express.favicon(__dirname + '/public/ico/favicon.ico'));
   // logging
   app.use(express.logger('dev'));
   // parse request bodies (req.body)
   app.use(express.bodyParser());
-  // parse request bodies (req.body)
+  // support _method (PUT in forms etc)
   app.use(express.methodOverride());
 
   /* =================================================
@@ -106,7 +130,7 @@ app.configure(function(){
   =================================================== */
 
   // cookieParser is required by session() middleware
-  // pass the secret for signed cookies These two must
+  // pass the secret for signed cookies These two *must*
   // be placed in the order shown.
 
   app.use(express.cookieParser('dM3nMWcxF85n'));
@@ -180,9 +204,10 @@ app.configure(function(){
    Complile the Less code to css 
   =================================================== */
 
-  // Basically when we get a request for a css file the less 
-  // middleware sees if exists.  If not it looks for a similarly 
-  // named Less file compiles it.
+  // When we get a request for a css file the less middleware 
+  // sees if exists.  If not it looks for a similarly named 
+  // Less file and compiles it.
+
   // GET /styles.css will cause styles.less > styles.css
   // Simple no?
 
@@ -191,7 +216,7 @@ app.configure(function(){
    , src: __dirname + '/less'
    , prefix: '/css'
    , compress: true
-   , debug: true
+   , debug: false
   }));
 
   /* =================================================
@@ -212,8 +237,7 @@ app.configure(function(){
   // BEFORE file serving takes place. If placed after as shown here then 
   // file serving is performed BEFORE any routes are hit.
 
-  app.use(express.favicon(__dirname + '/public/ico/favicon.ico'));
-  app.use(express.compress());     // for GZIP compression (not sure if this works though!)
+  app.use(express.compress());     // for GZIP compression
   app.use(express.static(__dirname + '/public'));
   app.use(express.static(__dirname + '/public/css'));
   app.use(express.static(__dirname + '/public/ico'));
@@ -294,11 +318,13 @@ app.configure(function(){
 
 app.configure('development', function(){
     showconsole = true;   // Turn on logging 
+
   // Keep search engines out using robots.txt
   app.all('/robots.txt', function(req,res) {
     res.charset = 'text/plain';
     res.send('User-agent: *\nDisallow: /');
   });
+
   app.locals.pretty = true;  // line breaks in the jade output
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   app.use(express.logger(
@@ -323,12 +349,14 @@ app.configure('development', function(){
 app.configure('production', function(){  
   showconsole = false;   // Turn off logging
   app.use(express.errorHandler());
+
   // Allow all search engines  www.robotstxt.org/
   // www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449
   app.all('/robots.txt', function(req,res) {
     res.charset = 'text/plain';
     res.send('User-agent: *');
   });
+  
 });
 
 /* ==============================================================

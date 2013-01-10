@@ -128,7 +128,7 @@ function findById(id, fn) {
 /* ===================================================
    Needed for Passport 
 ====================================================== */
-/* =========================================================
+/* ===================================================
  * FINDBY: Looks up users in the database either by name
  *         or email address.
  *
@@ -138,7 +138,7 @@ function findById(id, fn) {
  *
  * Examples:
  *   findBy('Username', 'Dan', callback)
- * ========================================================== */
+ * ==================================================== */
 function findBy(attr, val, callback) {
   db.view('user/by'+(attr), {key: val}, function (err, res) { 
     if (err) {
@@ -237,11 +237,12 @@ module.exports = function(app) {
 
   // --- GET Routes
   app.get('/', index);
-  app.get('/account', ensureAuthenticated, account);
   app.get('/signup', signup);
   app.get('/login', login);
+  app.get('/passwdreset', passwdreset);
+  app.get('/account', ensureAuthenticated, account);
   app.get('/logout', ensureAuthenticated, logout);
-  app.get('/welcome', welcome);
+  app.get('/welcome', ensureAuthenticated, welcome);
 
   //Retrieve a user's tags
   //-------------------------------------------------------------
@@ -293,7 +294,7 @@ module.exports = function(app) {
 
 /* ==============================================================
     Here's route code (the rendering function is placed in a 
-    variable andcalled in the routing above)
+    variable and called in the routing above)
 =============================================================== */
 
 //GET / (index)
@@ -301,6 +302,15 @@ module.exports = function(app) {
 var index = function(req, res){
   res.render('index', {
     user: req.user
+  });
+};
+
+//GET /passwdreset
+///////////////////////////////////////////////////////////////
+var passwdreset = function(req, res){
+  res.render('passwdreset', {
+    user: req.user,
+    message: req.flash('error')
   });
 };
 

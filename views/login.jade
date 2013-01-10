@@ -26,6 +26,10 @@ block content
               label.control-label(for='inputEmail') Email
               div.controls
                 input#inputEmail.input-large(name='email', type='email', placeholder='you@youremail.com', required)
+            //- Flash Message
+            if (message != '')
+              div.alert.alert-error
+                p !{message}
             div.control-group
                 label.control-label(for='inputUserName') Your Name
                 div.controls
@@ -36,13 +40,12 @@ block content
                 input#inputPassword.input-large(name='password', type='password', placeholder='passw0rd', required)
             div.control-group
               div.controls
-                button.btn(type='submit') Sign In
-
-        //- Flash Message
-        if (message != '')
-          div.alert.alert-error
-            p !{message}
-        br
+                button.btn.btn-primary(type='submit') Sign In      
+        p <em>Forgot your 
+          a(href='/passwdreset') <strong>password?</strong>
+        p Or, do you need to 
+          a(href='signup') <strong>sign up</strong>
+          |  for a #{title} account?</em>
         br
         p.small
           em Hint: try "Dan" and "passw0rd"
