@@ -3,6 +3,62 @@
 extends layout
 
 block content
+  script 
+    
+    // Get Validation Script
+    $.getScript("/js/lib/mailcheck/mailcheck.min.js")
+    .done(function(script, textStatus) {    
+        console.log("Mailcheck loaded.");
+    })
+    .fail(function(jqxhr, settings, exception) {  
+        console.log("Mailcheck load failed.");
+    });
+
+    $(document).ready(function() {
+       
+      $("#inputUserName").focus();
+      $("#hint").css('display', 'none');
+      
+      //$(function () { $("input").not("[type=submit]").jqBootstrapValidation(); } );
+
+      var $email = $('#inputEmail');
+      var $hint = $("#hint");
+
+      $email.on('blur', function() {
+        $hint.css('display', 'none').empty();
+        $(this).mailcheck({
+          suggested: function(element, suggestion) {
+            if(!$hint.html()) {
+              // First error - fill in/show entire hint element
+              var suggestion = "Did you mean <span class='suggestion'>" +
+                                "<span class='address'>" + suggestion.address + "</span>"
+                                + "@<a href='#' class='domain'>" + suggestion.domain + 
+                                "</a></span>?";
+                                
+              $hint.html(suggestion).fadeIn(150);
+            } else {
+              // Subsequent errors
+              $(".address").html(suggestion.address);
+              $(".domain").html(suggestion.domain);
+            }
+          },
+            empty: function(element) {
+            // callback code
+          }
+        });
+      });
+
+      $hint.on('click', '.domain', function() {
+        // On click, fill in the field with the suggestion and remove the hint
+        $email.val($(".suggestion").text());
+        $hint.fadeOut(200, function() {
+          $(this).empty();
+        });
+        $("#inputPassword").focus();
+        return false;
+      });
+
+    });
   div.container
     //- 
       div.row
@@ -22,61 +78,6 @@ block content
 
     div.row
       div.span5.offset2
-        
-        //- set focus for the user headjs version
-        script 
-          head.ready(function() {
-             $("#inputUserName").focus();
-             $("#hint").css('display', 'none');
-             $(function () { $("input").not("[type=submit]").jqBootstrapValidation(); } );
-          });
-
-        //- check entered email
-        script
-          head.ready(function() {
-            
-            var $email = $('#inputEmail');
-            var $hint = $("#hint");
-
-            $email.on('blur', function() {
-              $hint.css('display', 'none').empty();
-              $(this).mailcheck({
-                suggested: function(element, suggestion) {
-                  if(!$hint.html()) {
-                    // First error - fill in/show entire hint element
-                    var suggestion = "Did you mean <span class='suggestion'>" +
-                                      "<span class='address'>" + suggestion.address + "</span>"
-                                      + "@<a href='#' class='domain'>" + suggestion.domain + 
-                                      "</a></span>?";
-                                      
-                    $hint.html(suggestion).fadeIn(150);
-                  } else {
-                    // Subsequent errors
-                    $(".address").html(suggestion.address);
-                    $(".domain").html(suggestion.domain);
-                  }
-                },
-                  empty: function(element) {
-                  // callback code
-                }
-              });
-            });
-
-            $hint.on('click', '.domain', function() {
-              // On click, fill in the field with the suggestion and remove the hint
-              $email.val($(".suggestion").text());
-              $hint.fadeOut(200, function() {
-                $(this).empty();
-              });
-              $("#inputPassword").focus();
-              return false;
-            });
-
-          });
-
-        //- set focus for the user regular version
-          script $(document).ready(function () { $("#inputUserName").focus(); })
-
         //- Signup Form
         br 
         br 

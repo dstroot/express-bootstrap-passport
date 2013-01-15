@@ -17,17 +17,64 @@ head
   link(rel='stylesheet', href='/css/docs.css')
 
   // scripts ============================================ 
-  //- Let's use headjs as our loader and also eliminate HTML5 Shim http://headjs.com/
-  script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/headjs/0.99/head.min.js')
-  //- dependencies (execute in order listed)
-  script(type='text/javascript')
-    head.js( 
-       'http://platform.twitter.com/widgets.js' 
-     , '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js'
-     , '/js/bootstrap.js'
-     , '/js/lib/mailcheck/mailcheck.min.js'
-    // , '/js/lib/jqBootstrapValidation/jqBootstrapValidation.js'
-    );
+  //if lt IE 9
+    script(src="http://html5shim.googlecode.com/svn/trunk/html5.js")
+  script(src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js")
+  script
+    $(document).ready(function() {
+      // Load Twitter
+      $.getScript("http://platform.twitter.com/widgets.js")
+      .done(function(script, textStatus) {  
+        console.log("Twitter loaded.");
+      })
+      .fail(function(jqxhr, settings, exception) {  
+        console.log("Twitter load failed.");
+      });
+      // Load Boostrap
+      $.getScript("/js/bootstrap.js")
+      .done(function(script, textStatus) {    
+        console.log("Bootstrap loaded.");
+      })
+      .fail(function(jqxhr, settings, exception) {  
+        console.log("Bootstrap load failed.");
+      });
+      // Load perfherder
+      $.getScript("/js/lib/perfherder.js")
+      .done(function(script, textStatus) {    
+        console.log("Perfherder loaded.");
+        _prf = new Perfherder({
+          debug: false,         // Toggles console logging.
+          track_errors: true,  // Track window.onerror events 
+          track_window: true,  // Track window dimensions
+          sample_rate: 1       // Sample rate = 100%, .5 = 50%
+        });
+        _prf.record('page loaded');
+      })
+      .fail(function(jqxhr, settings, exception) {  
+        console.log("Perfherder load failed.");
+      });
+      // menu handler
+      $(function(){
+        function stripTrailingSlash(str) {
+          if(str.substr(-1) == '/') {
+            return str.substr(0, str.length - 1);
+          }
+          return str;
+        }
+
+        var url = window.location.pathname;  
+        var activePage = stripTrailingSlash(url);
+
+        $('.nav li a').each(function(){  
+          var currentPage = stripTrailingSlash($(this).attr('href'));
+
+          if (activePage == currentPage) {
+            $(this).parent().addClass('active'); 
+          } 
+        });
+      });
+    });
+
   //- Google Tracking ==================================== 
 
   //- Use the Google Tracking Snippet to Track Your Website
